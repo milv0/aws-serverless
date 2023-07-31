@@ -10,13 +10,18 @@ export default class Form extends Component {
       pw: '',
       items: [],  // holds the items fetched from the API
       getItemId: '',  // 데이터 조회
-      deleteItemId: '' // 데이터 삭제
+      deleteItemId: '', // 데이터 삭제
+      chkId: '',
+      chkPw: '',
+      isLoggedIn: false,
+      loginMessage: '',
     };
     this.handleSubmit = this.handleSubmit.bind(this);
     this.handleChange = this.handleChange.bind(this);
     this.handleGetItem = this.handleGetItem.bind(this);
     this.handleGetAllItem = this.handleGetAllItem.bind(this);
     this.handleDeleteItem = this.handleDeleteItem.bind(this);
+    this.handleLogin = this.handleLogin.bind(this);
   }
 
   handleChange(event) {
@@ -33,41 +38,40 @@ export default class Form extends Component {
     event.preventDefault();
     try {
       const { id, pw, name } = this.state;
-      await axios.put("/items",  
-      { id: `${id}`, pw: `${pw}`, name: `${name}` });
+      await axios.put("/items",
+        { id: `${id}`, pw: `${pw}`, name: `${name}` });
       alert('Sign Up 성공!!!');
 
     } catch (error) {
       console.error('Error get item:', error);
       alert('Sign Up 실패...');
     }
-
   }
 
   // 전체 데이터 조회
   async handleGetAllItem(event){
     event.preventDefault();
     try {
-      const response = await axios.get(`/items`);  
+      const response = await axios.get(`/items`);
       alert(`조회 성공!!!`);
-      this.setState({ items: response.data });  
-      console.log('handleGetItem state:', this.state,response) ;  
+      this.setState({ items: response.data });
+      console.log('handleGetItem state:', this.state, response);
     } catch (error) {
       console.error('Error get item:', error);
       alert('조회 실패 (해당 ID 없음)...');
     }
   }
- 
+
   // 개별 데이터 조회 (id)
   async handleGetItem(event) {
     event.preventDefault();
     const { getItemId } = this.state;
 
     try {
-      const response = await axios.get(`/items/${getItemId}`);  
+      const response = await axios.get(`/items/${getItemId}`);
       alert(`ID ${getItemId} 조회 성공!!!`);
-      this.setState({ items: [response.data] });  
-      console.log('handleGetItem state:', this.state,response) ;  
+      this.setState({ items: [response.data] });
+      console.log('handleGetItem state:', this.state, response);
     } catch (error) {
       console.error('Error get item:', error);
       alert('조회 실패 (해당 ID 없음)...');
@@ -78,21 +82,58 @@ export default class Form extends Component {
   async handleDeleteItem(event) {
     event.preventDefault();
     const { deleteItemId } = this.state;
-  
+
     try {
-      await axios.delete(`/items/${deleteItemId}`); 
+      await axios.delete(`/items/${deleteItemId}`);
       alert(`ID ${deleteItemId} 삭제 성공!!!`);
-      this.setState({ deleteItemId: '' }); 
+      this.setState({ deleteItemId: '' });
     } catch (error) {
       console.error('Error deleting item:', error);
       alert('삭제 실패...');  // 없는 id 삭제 해도 성공으로 뜸
     }
   }
 
+  // 로그인
+  async handleLogin(event) {
+    event.preventDefault();
+    const { id, pw } = this.state;
+    try {
+      const response = await axios.get(`/items/${id}`);
+      const item = response.data;
+
+      if (item && item.pw === pw) {
+        this.setState({
+          isLoggedIn: true,
+          isError: false,
+          loginMessage: `ID ${id} 로그인 성공!!!`,
+        });
+        // alert(`ID ${id} 로그인 성공!!!`)
+
+      } else {
+        this.setState({
+          isLoggedIn: false,
+          isError: true,
+          errorMessage: '로그인 실패 (ID 또는 비밀번호가 일치하지 않습니다)...',
+        });
+        // alert(`로그인 실패 (ID 또는 비밀번호가 일치하지 않습니다)...`)
+      }
+    } catch (error) {
+      console.error('Error get item:', error);
+      this.setState({
+        isLoggedIn: false,
+        isError: true,
+        errorMessage: '로그인 실패 (해당 ID 없음)...',
+      });
+      // alert(`로그인 실패 (해당 ID 없음)...`)
+    }
+  }
 
   render() {
+    const { isLoggedIn,isError, loginMessage, errorMessage } = this.state;
+
     return (
       <div>
+        {/* Sign UP */}
         <div className="form-container">
           <form onSubmit={this.handleSubmit} className="form-item">
             <label className="label"> ** Sign Up ** </label>
@@ -111,7 +152,7 @@ export default class Form extends Component {
                 type="text"
                 name="pw"
                 onChange={this.handleChange}
-                value={this.state.price}
+                value={this.state.pw}
                 placeholder="pw"
               />
             </div>
@@ -129,6 +170,38 @@ export default class Form extends Component {
           </form>
         </div>
 
+        {/* Login */}
+        <div className="form-container">
+          <form onSubmit={this.handleLogin} className="form-item">
+            <label className="label"> ** Login ** </label>
+
+            <div className="input-field">
+              <input
+                type="text"
+                name="id"
+                onChange={this.handleChange}
+                value={this.state.id}
+                placeholder="id"
+              />
+            </div>
+            <div className="input-field">
+              <input
+                type="text"
+                name="pw"
+                onChange={this.handleChange}
+                value={this.state.pw}
+                placeholder="pw"
+              />
+            </div>
+            <button type="submit" className="signup-button">Login</button>
+          </form>
+        </div>
+
+         {/* Display Login Result */}
+         {isLoggedIn && <p>{loginMessage}</p>}
+         {isError &&<p>{errorMessage}</p>}
+
+
         {/* 전체 데이터 조회 */}
         <button type="button" onClick={this.handleGetAllItem}>Get All Items</button>
 
@@ -143,7 +216,6 @@ export default class Form extends Component {
           />
           <button type="submit">Get Item</button>
         </form>
-
 
         {/* 개별 데이터 ID로 삭제 */}
         <form onSubmit={this.handleDeleteItem}>
@@ -160,13 +232,13 @@ export default class Form extends Component {
         {/* 리스트 출력 */}
         {Array.isArray(this.state.items) && this.state.items.map((item, index) => (
           item && <div key={index}>
-             <p>Created Date: {item.date}</p>
+            <p>Created Date: {item.date}</p>
             <p>Id: {item.id}</p>
             <p>pw: {item.pw}</p>
             <p>Name: {item.name}</p>
           </div>
-        ))}     
-       </div>
+        ))}
+      </div>
     );
   }
 }
