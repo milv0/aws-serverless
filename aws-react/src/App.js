@@ -221,8 +221,8 @@ export default class Form extends Component {
         </div>
 
          {/* Display Login Result */}
-         {isLoggedIn && <p>{loginMessage}</p>}
-         {isError &&<p>{errorMessage}</p>}
+         {isLoggedIn && <h1>{loginMessage}</h1>}
+         {isError &&<h1>{errorMessage}</h1>}
 
 
         {/* 전체 데이터 조회 */}
