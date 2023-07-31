@@ -15,7 +15,7 @@ export default class Form extends Component {
     this.handleSubmit = this.handleSubmit.bind(this);
     this.handleChange = this.handleChange.bind(this);
     this.handleGetItem = this.handleGetItem.bind(this);
-    // mg
+    this.handleGetAllItem = this.handleGetAllItem.bind(this);
     this.handleDeleteItem = this.handleDeleteItem.bind(this);
   }
 
@@ -28,42 +28,64 @@ export default class Form extends Component {
     console.log(this.state);
   }
 
-
+  // 데이터 저장 (dynamoDB)
   async handleSubmit(event) {
     event.preventDefault();
-    const { id, pw, name } = this.state;
-    await axios.put("/items",  
-    { id: `${id}`, pw: `${pw}`, name: `${name}` });
+    try {
+      const { id, pw, name } = this.state;
+      await axios.put("/items",  
+      { id: `${id}`, pw: `${pw}`, name: `${name}` });
+      alert('Sign Up 성공!!!');
+
+    } catch (error) {
+      console.error('Error get item:', error);
+      alert('Sign Up 실패...');
+    }
 
   }
 
+  // 전체 데이터 조회
+  async handleGetAllItem(event){
+    event.preventDefault();
+    try {
+      const response = await axios.get(`/items`);  
+      alert(`조회 성공!!!`);
+      this.setState({ items: response.data });  
+      console.log('handleGetItem state:', this.state,response) ;  
+    } catch (error) {
+      console.error('Error get item:', error);
+      alert('조회 실패 (해당 ID 없음)...');
+    }
+  }
+ 
+  // 개별 데이터 조회 (id)
   async handleGetItem(event) {
     event.preventDefault();
     const { getItemId } = this.state;
 
     try {
-      const response = await axios.get(`/items/${getItemId}`);  // Get the specific item
-      alert(`ID ${getItemId} 조회 성공!`);
-      this.setState({ items: [response.data] });  // update the items array with the fetched item
-      console.log('handleGetItem state:', this.state,response) ;  // log the updated state
+      const response = await axios.get(`/items/${getItemId}`);  
+      alert(`ID ${getItemId} 조회 성공!!!`);
+      this.setState({ items: [response.data] });  
+      console.log('handleGetItem state:', this.state,response) ;  
     } catch (error) {
       console.error('Error get item:', error);
-      alert('조회 실패 (해당 ID 없음).');
+      alert('조회 실패 (해당 ID 없음)...');
     }
   }
-  
-  // mg
+
+  // 개별 데이터 삭제 (id)
   async handleDeleteItem(event) {
     event.preventDefault();
     const { deleteItemId } = this.state;
   
     try {
-      await axios.delete(`/items/${deleteItemId}`); // Delete the specific item
-      alert(`ID ${deleteItemId} 삭제 성공!`);
-      this.setState({ deleteItemId: '' }); // Clear the input field after deletion
+      await axios.delete(`/items/${deleteItemId}`); 
+      alert(`ID ${deleteItemId} 삭제 성공!!!`);
+      this.setState({ deleteItemId: '' }); 
     } catch (error) {
       console.error('Error deleting item:', error);
-      alert('Failed to delete item.');
+      alert('삭제 실패...');  // 없는 id 삭제 해도 성공으로 뜸
     }
   }
 
@@ -71,36 +93,46 @@ export default class Form extends Component {
   render() {
     return (
       <div>
-        <form onSubmit={this.handleSubmit}>
-          <label> ** Sign Up ** </label>
-          <label>id:</label>
-          <input
-            type="text"
-            name="id"
-            onChange={this.handleChange}
-            value={this.state.id}
-          />
+        <div className="form-container">
+          <form onSubmit={this.handleSubmit} className="form-item">
+            <label className="label"> ** Sign Up ** </label>
+            <div className="input-field">
+              <input
+                type="text"
+                name="id"
+                onChange={this.handleChange}
+                value={this.state.id}
+                placeholder="id"
+              />
+            </div>
 
-          <label>pw:</label>
-          <input
-            type="text"
-            name="pw"
-            onChange={this.handleChange}
-            value={this.state.price}
-          />
+            <div className="input-field">
+              <input
+                type="text"
+                name="pw"
+                onChange={this.handleChange}
+                value={this.state.price}
+                placeholder="pw"
+              />
+            </div>
 
-        <label>name:</label>
-          <input
-            type="text"
-            name="name"
-            onChange={this.handleChange}
-            value={this.state.name}
-          />
+            <div className="input-field">
+              <input
+                type="text"
+                name="name"
+                onChange={this.handleChange}
+                value={this.state.name}
+                placeholder="name"
+              />
+            </div>
+            <button type="submit" className="signup-button">Sign Up</button>
+          </form>
+        </div>
 
-          <button type="submit">Send</button>
-        </form>
+        {/* 전체 데이터 조회 */}
+        <button type="button" onClick={this.handleGetAllItem}>Get All Items</button>
 
-        {/* Add an input box and a button to fetch a specific item by ID */}
+        {/* 개별 데이터 ID로 조회 */}
         <form onSubmit={this.handleGetItem}>
           <label>** Get item by ID ** </label>
           <input
@@ -112,17 +144,8 @@ export default class Form extends Component {
           <button type="submit">Get Item</button>
         </form>
 
-        {/* Render the list of items */}
-        {Array.isArray(this.state.items) && this.state.items.map((item, index) => (
-          item && <div key={index}>
-             <p>Created Date: {item.date}</p>
-            <p>Id: {item.id}</p>
-            <p>pw: {item.pw}</p>
-            <p>Name: {item.name}</p>
-          </div>
-        ))}     
 
-        {/* mg */}
+        {/* 개별 데이터 ID로 삭제 */}
         <form onSubmit={this.handleDeleteItem}>
           <label>** Delete item by ID ** </label>
           <input
@@ -133,8 +156,17 @@ export default class Form extends Component {
           />
           <button type="submit">Delete Item</button>
         </form>
+
+        {/* 리스트 출력 */}
+        {Array.isArray(this.state.items) && this.state.items.map((item, index) => (
+          item && <div key={index}>
+             <p>Created Date: {item.date}</p>
+            <p>Id: {item.id}</p>
+            <p>pw: {item.pw}</p>
+            <p>Name: {item.name}</p>
+          </div>
+        ))}     
        </div>
-    
     );
   }
 }

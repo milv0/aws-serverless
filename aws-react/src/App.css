@@ -2,32 +2,33 @@
   text-align: center;
 }
 
-.App-logo {
-  animation: App-logo-spin infinite 20s linear;
-  height: 40vmin;
-  pointer-events: none;
-}
+/* Form.css */
 
-.App-header {
-  background-color: #282c34;
-  min-height: 100vh;
+.form-container {
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: center;
-  font-size: calc(10px + 2vmin);
-  color: white;
+  margin-top: 20px;
 }
 
-.App-link {
-  color: #61dafb;
+.form-item {
+  display: flex;
+  align-items: center; /* 가로 방향으로 가운데 정렬 */
+  margin-bottom: 10px;
 }
 
-@keyframes App-logo-spin {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
+.label {
+  font-weight: bold;
+  min-width: 80px; /* 각 라벨의 최소 너비를 지정 */
+  margin-right: 10px; /* 라벨과 입력 상자 사이의 간격 조정 */
+}
+
+/* 입력 상자 너비를 100%로 설정하여 부모 요소인 form-item에 맞춥니다. */
+.input-field {
+  width: 100%;
+  padding: 5px;
+}
+
+.signup-button {
+  padding: 10px;
 }
