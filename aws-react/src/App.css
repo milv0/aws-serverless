@@ -1,34 +1,41 @@
-.App {
+/* app.css */
+
+body {
+  font-family: Arial, sans-serif;
+  margin: 0;
+  padding: 0;
+  align-items: center;
   text-align: center;
 }
 
-/* Form.css */
-
-.form-container {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  margin-top: 20px;
-}
-
-.form-item {
-  display: flex;
-  align-items: center; /* 가로 방향으로 가운데 정렬 */
-  margin-bottom: 10px;
-}
-
-.label {
-  font-weight: bold;
-  min-width: 80px; /* 각 라벨의 최소 너비를 지정 */
-  margin-right: 10px; /* 라벨과 입력 상자 사이의 간격 조정 */
-}
-
-/* 입력 상자 너비를 100%로 설정하여 부모 요소인 form-item에 맞춥니다. */
-.input-field {
-  width: 100%;
-  padding: 5px;
-}
-
-.signup-button {
+nav {
+  background-color: #333;
+  color: #fff;
   padding: 10px;
+}
+
+nav ul {
+  list-style-type: none;
+  margin: 0;
+  padding: 0;
+}
+
+nav ul li {
+  display: inline;
+  margin-right: 10px;
+}
+
+nav ul li a {
+  color: #fff;
+  text-decoration: none;
+}
+
+.container {
+  max-width: 600px;
+  margin: 0 auto;
+  padding: 20px;
+}
+
+h1 {
+  text-align: center;
 }
