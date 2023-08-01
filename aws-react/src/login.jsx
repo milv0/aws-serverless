@@ -63,7 +63,7 @@ export class Login extends Component {
     const { isLoggedIn, isError, loginMessage, errorMessage, systemMessage } = this.state;
 
     return (
-      <div>
+      <div  className="form-wrapper">
         {/* Display System Message */}
         <h1 className="system-message">{systemMessage}</h1>
         <h1>Login Page</h1>

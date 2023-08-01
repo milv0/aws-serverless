@@ -64,7 +64,7 @@ class SignUp extends Component {
     const { systemMessage } = this.state;
 
     return (
-      <div>
+      <div  className="form-wrapper">
         {/* Display System Message */}
         <h1 className="system-message">{systemMessage}</h1>
         <h1>SignUp Page</h1>

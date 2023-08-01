@@ -229,7 +229,7 @@ export class Form extends Component {
 
         {/* Get Item by ID Form */}
         <form onSubmit={this.handleGetItem}>
-          <label>** Get item by ID ** </label>
+          <label>** Get ID ** </label>
           <input
             type="text"
             name="getItemId"
@@ -241,7 +241,7 @@ export class Form extends Component {
 
         {/* Delete Item by ID Form */}
         <form onSubmit={this.handleDeleteItem}>
-          <label>** Delete item by ID ** </label>
+          <label>** Delete ID ** </label>
           <input
             type="text"
             name="deleteItemId"
