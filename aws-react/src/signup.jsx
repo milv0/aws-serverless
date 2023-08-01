@@ -65,9 +65,9 @@ class SignUp extends Component {
 
     return (
       <div>
-        <h1>SignUp Page</h1>
         {/* Display System Message */}
         <h1 className="system-message">{systemMessage}</h1>
+        <h1>SignUp Page</h1>
 
         {/* Sign Up */}
         <div className="form-container">

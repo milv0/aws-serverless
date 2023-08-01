@@ -64,9 +64,9 @@ export class Login extends Component {
 
     return (
       <div>
-        <h1>Login Page</h1>
         {/* Display System Message */}
         <h1 className="system-message">{systemMessage}</h1>
+        <h1>Login Page</h1>
 
          {/* Login */}
          <div className="form-container">

@@ -147,10 +147,11 @@ export class Form extends Component {
 
     return (
       (
-        <div className="form-wrapper">
-        <h1 className="main-heading">Form.js</h1>
+        
+      <div className="form-wrapper">
         {/* Display System Message */}
         <h1 className="system-message">{systemMessage}</h1>
+        <h1 className="main-heading">Form.js</h1>
 
         {/* Sign Up */}
         <div className="form-container">

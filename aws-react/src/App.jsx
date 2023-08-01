@@ -25,7 +25,7 @@ function App() {
         </nav>
 
         <div className="container"> {/* Add a container to center align the content */}
-          <h1>Main Page</h1> {/* Display a heading for the main page */}
+          {/* <h1>Main Page</h1> 이거 왜 login signup 이동하면서 남아있지???*/}
           <Routes>
             <Route path="/" element={<Form />} />
             <Route path="/login" element={<Login />} />
