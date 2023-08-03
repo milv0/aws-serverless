@@ -18,7 +18,9 @@ export class Form extends Component {
           isError: false,
           loginMessage: '',
           errorMessage: '',
-          systemMessage:''
+          systemMessage:'',
+          file: null,
+          type: null
         };
         this.handleSubmit = this.handleSubmit.bind(this);
         this.handleChange = this.handleChange.bind(this);
@@ -26,6 +28,9 @@ export class Form extends Component {
         this.handleGetAllItem = this.handleGetAllItem.bind(this);
         this.handleDeleteItem = this.handleDeleteItem.bind(this);
         this.handleLogin = this.handleLogin.bind(this);
+        this.handleFileUpload = this.handleFileUpload.bind(this);   // s3
+        this.handleFileChange = this.handleFileChange.bind(this);
+
       }
     
       handleChange(event) {
@@ -36,7 +41,12 @@ export class Form extends Component {
         });
         console.log(this.state);
       }
-    
+      handleFileChange(event) {
+        this.setState({
+          file: event.target.files[0]
+        });
+      }
+          
       // 데이터 저장 (dynamoDB)
       async handleSubmit(event) {
         event.preventDefault();
@@ -45,7 +55,6 @@ export class Form extends Component {
           await axios.put("/items",
             { id: `${id}`, pw: `${pw}`, name: `${name}` });
           this.setState({systemMessage:  `Sign Up 성공!!!`});
-    
     
         } catch (error) {
           console.error('Error get item:', error);
@@ -100,10 +109,45 @@ export class Form extends Component {
             systemMessage:  `ID ${deleteItemId} 삭제 성공!!!`
           });
         } catch (error) {
-          console.error('Error deleting item:', error);
-          // alert('삭제 실패...');  // 없는 id 삭제 해도 성공으로 뜸
+          console.error('Error deleting item:', error); // 없는 id 삭제 해도 성공으로 뜸
           this.setState({systemMessage:  `삭제 실패...`});
     
+        }
+      }
+
+      // s3 업로드
+      async handleFileUpload(event) {
+        event.preventDefault();
+      
+        // Check if a file was selected before proceeding
+        if (!this.state.file) {
+          console.error("No file selected.");
+          this.setState({systemMessage:  ` No file selected.`});
+
+          return;
+        }
+      
+        // Create a new FormData instance
+        const formData = new FormData();
+      
+        // Add the file to the form data
+        formData.append('file', this.state.file, this.state.file.name);
+      
+        // Send the POST request
+        try {
+          await axios.post('/files', formData, {
+            headers: {
+              'Content-Type': 'multipart/form-data'
+            }
+          });
+        
+          this.setState({systemMessage:  ` 업로드 성공!!!`});
+
+          console.log('File uploaded successfully!');
+        } catch (error) {
+          console.error('File upload failed:', error);
+          this.setState({systemMessage:  ` 업로드 실패...`});
+
         }
       }
     
@@ -121,7 +165,6 @@ export class Form extends Component {
               isError: false,
               loginMessage: `ID ${chkId} 로그인 성공!!!`,
             });
-            // alert(`ID ${id} 로그인 성공!!!`)
     
           } else {
             this.setState({
@@ -129,7 +172,6 @@ export class Form extends Component {
               isError: true,
               errorMessage: '로그인 실패 (ID 또는 비밀번호가 일치하지 않습니다)...',
             });
-            // alert(`로그인 실패 (ID 또는 비밀번호가 일치하지 않습니다)...`)
           }
         } catch (error) {
           console.error('Error get item:', error);
@@ -226,6 +268,17 @@ export class Form extends Component {
         >
           Get All Items
         </button>
+
+        {/* Add a form for file uploads */}
+        <form onSubmit={this.handleFileUpload}>
+          <label>** Upload file (text file only) ** </label>
+          <input
+            type="file"
+            onChange={this.handleFileChange}
+          />
+          <button type="submit">Upload File</button>
+        </form>
+
 
         {/* Get Item by ID Form */}
         <form onSubmit={this.handleGetItem}>

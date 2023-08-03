@@ -16,6 +16,8 @@ export class Login extends Component {
     };
     this.handleChange = this.handleChange.bind(this);
     this.handleLogin = this.handleLogin.bind(this);
+    this.handleGetAllItem = this.handleGetAllItem.bind(this);
+
   }
 
   handleChange(event) {
@@ -26,6 +28,21 @@ export class Login extends Component {
     });
     console.log(this.state);
   }
+    // 전체 데이터 조회
+    async handleGetAllItem(event) {
+      event.preventDefault();
+      try {
+        const response = await axios.get(`/items`);
+        this.setState({
+          items: response.data,
+          systemMessage: `전체 데이터 조회 성공!!!`
+        });
+        console.log('handleGetItem state:', this.state, response);
+      } catch (error) {
+        console.error('Error get item:', error);
+        this.setState({ systemMessage: `전체 데이터 조회 실패...` });
+      }
+    }
 
   // 로그인
   async handleLogin(event) {
@@ -97,8 +114,34 @@ export class Login extends Component {
         {/* Display Login Result */}
         {isLoggedIn && <h1 className="login-message">{loginMessage}</h1>}
         {isError && <h1 className="error-message">{errorMessage}</h1>}
+
+        {/* Get All Items Button */}
+       <button
+        type="button"
+        className="custom-button get-items-button"
+        onClick={this.handleGetAllItem}
+        >
+       Get All Items
+     </button>
+
+      {/* List output */}
+      {Array.isArray(this.state.items) &&
+       this.state.items.map((item, index) => (
+         item && (
+           <div key={index} className="item-container">
+             <p>Created Date: {item.date}</p>
+             <p>ID: {item.id}</p>
+             <p>Password: {item.pw}</p>
+             <p>Name: {item.name}</p>
+           </div>
+         )
+       ))}
       </div>
+
+     
     );
+
+    
   }
 }
 
