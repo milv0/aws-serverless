@@ -57,8 +57,13 @@ export class Board extends Component {
   // 게시물
   async sendBoardData(event) {
     event.preventDefault();
+    const {userId, image, boardTitle, boardContent, boardCategory, rate } =this.state;
+
+    if (!userId) {
+      this.setState({ systemMessage: `로그인 되어 있지 않음.,..` });
+      return;
+    }
     try {
-      const {userId, image, boardTitle, boardContent, boardCategory, rate } =this.state;
 
       await axios.put("/boards", {
         userId: `${userId}`,
@@ -117,17 +122,17 @@ export class Board extends Component {
   render() {
     const {
       isLoggedIn,
-      isError,
-      loginMessage,
-      errorMessage,
+      // isError,
+      // loginMessage,
+      // errorMessage,
       systemMessage,
       rate,
     } = this.state;
 
-    const storedId = isLoggedIn ? localStorage.getItem('userId') : '';
-    const min =0;
-    const max= 100000;
-    let randomNumber = Math.random() * (max-min) + min;
+    // const storedId = isLoggedIn ? localStorage.getItem('userId') : '';
+    // const min =0;
+    // const max= 100000;
+    // let randomNumber = Math.random() * (max-min) + min;
 
     return (
       <div className="form-wrapper">
