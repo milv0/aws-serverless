@@ -164,7 +164,7 @@ export class Login extends Component {
 
         {/* Board 페이지로 이동하는 버튼 */}
         {showBoardButton && (
-          <Link to="/board" className="submit-button">
+          <Link to="/boardList" className="submit-button">
             Board 페이지로 이동
           </Link>
         )}

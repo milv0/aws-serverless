@@ -4,6 +4,7 @@ import Form from "./Form";
 import Login from "./login";
 import SignUp from "./signup";
 import Board from "./board";
+import { BoardList } from "./boardList";
 
 import "./App.css";
 
@@ -36,6 +37,7 @@ function App() {
             <Route path="/login" element={<Login />} />
             <Route path="/signup" element={<SignUp />} />
             <Route path="/board" element={<Board />} />
+            <Route path="/boardList" element={<BoardList />} />
             <Route path="/" element={<Form />} />
           </Routes>
         </div>

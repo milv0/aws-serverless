@@ -1,6 +1,7 @@
 import React, { Component } from "react";
 import axios from "axios";
 import "./Form.css";
+import { BrowserRouter as Router, Route, Routes, Link } from "react-router-dom";
 
 export class Board extends Component {
   constructor(props) {
@@ -36,8 +37,6 @@ export class Board extends Component {
     this.getBoardList = this.getBoardList.bind(this);
     this.handleCategoryChange = this.handleCategoryChange.bind(this);
     this.handleRateClick = this.handleRateClick.bind(this);
-
-
   }
 
   handleChange(event) {
@@ -57,14 +56,14 @@ export class Board extends Component {
   // 게시물
   async sendBoardData(event) {
     event.preventDefault();
-    const {userId, image, boardTitle, boardContent, boardCategory, rate } =this.state;
+    const { userId, image, boardTitle, boardContent, boardCategory, rate } =
+      this.state;
 
     if (!userId) {
       this.setState({ systemMessage: `로그인 되어 있지 않음.,..` });
       return;
     }
     try {
-
       await axios.put("/boards", {
         userId: `${userId}`,
         image: `${image}`,
@@ -115,10 +114,36 @@ export class Board extends Component {
     });
   }
 
+  // 게시물 별점 저장하기
   async handleRateClick(rate) {
     this.setState({ rate });
   }
+  // 별 아이콘을 그리는 함수
+  showStars(value) {
+    const fullStars = Math.floor(value);
+    const halfStar = value - fullStars >= 0.5 ? true : false;
+    const emptyStars = 5 - Math.ceil(value);
 
+    return (
+      <div className="star-rating">
+        {[...Array(fullStars)].map((_, index) => (
+          <span key={index} className="star selected">
+            ★
+          </span>
+        ))}
+        {halfStar && (
+          <span className="star selected">
+            <span className="half-star">★</span>
+          </span>
+        )}
+        {[...Array(emptyStars)].map((_, index) => (
+          <span key={index} className="star">
+            ★
+          </span>
+        ))}
+      </div>
+    );
+  }
   render() {
     const {
       isLoggedIn,
@@ -152,9 +177,10 @@ export class Board extends Component {
                 placeholder="사용자 ID"
                 className="input-field"
               /> */}
-              
-            <p>작성자: {this.state.userId = localStorage.getItem('userId')} </p>
-            
+
+              <p>
+                작성자: {(this.state.userId = localStorage.getItem("userId"))}{" "}
+              </p>
             </div>
             <div className="input-field">
               <input
@@ -178,7 +204,7 @@ export class Board extends Component {
             </div>
 
             {/* 카테고리 */}
-            <div className="input-field"> 
+            <div className="input-field">
               {/* <input
                 type="text"
                 name="boardCategory"
@@ -237,7 +263,6 @@ export class Board extends Component {
                 className="input-field textarea-field"
               />
             </div>
-           
 
             <div className="input-field">
               {/* <input
@@ -277,6 +302,10 @@ export class Board extends Component {
         >
           Get All boards List
         </button>
+        {/* 게시물 작성으로 이동하는 버튼 */}
+        <Link to="/boardList" className="submit-button">
+          게시물 리스트 페이지로 이동
+        </Link>
         {/* List output */}
         {Array.isArray(this.state.items) &&
           this.state.items.map(
@@ -287,9 +316,10 @@ export class Board extends Component {
                   <p>UserID: {item.userId}</p>
                   <p>BoardTitle: {item.boardTitle}</p>
                   <p>Img: {item.image}</p>
-                  {/* <p>BoardContent: {item.boardContent}</p> */}
                   <p>BoardCategory: {item.boardCategory}</p>
-                  <p>Rate: {item.rate}</p>
+                  <div className="rate-container">
+                    {this.showStars(item.rate)}
+                  </div>
                 </div>
               )
           )}
@@ -297,4 +327,4 @@ export class Board extends Component {
     );
   }
 }
-export default Board; // Form 컴포넌트를 일반적인 내보내기로 설정
+export default Board;
