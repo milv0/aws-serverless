@@ -1,7 +1,6 @@
 import React, { Component } from "react";
 import axios from "axios";
 import "./Form.css";
-// import "./board.css";
 
 export class Board extends Component {
   constructor(props) {
@@ -36,6 +35,9 @@ export class Board extends Component {
     this.sendBoardData = this.sendBoardData.bind(this);
     this.getBoardList = this.getBoardList.bind(this);
     this.handleCategoryChange = this.handleCategoryChange.bind(this);
+    this.handleRateClick = this.handleRateClick.bind(this);
+
+
   }
 
   handleChange(event) {
@@ -56,8 +58,8 @@ export class Board extends Component {
   async sendBoardData(event) {
     event.preventDefault();
     try {
-      const { userId, image, boardTitle, boardContent, boardCategory, rate } =
-        this.state;
+      const {userId, image, boardTitle, boardContent, boardCategory, rate } =this.state;
+
       await axios.put("/boards", {
         userId: `${userId}`,
         image: `${image}`,
@@ -108,28 +110,46 @@ export class Board extends Component {
     });
   }
 
+  async handleRateClick(rate) {
+    this.setState({ rate });
+  }
+
   render() {
-    const { isLoggedIn, isError, loginMessage, errorMessage, systemMessage } =
-      this.state;
+    const {
+      isLoggedIn,
+      isError,
+      loginMessage,
+      errorMessage,
+      systemMessage,
+      rate,
+    } = this.state;
+
+    const storedId = isLoggedIn ? localStorage.getItem('userId') : '';
+    const min =0;
+    const max= 100000;
+    let randomNumber = Math.random() * (max-min) + min;
 
     return (
       <div className="form-wrapper">
         {/* Display System Message */}
         <h1 className="system-message">{systemMessage}</h1>
-        <h1 className="main-heading">Boarddfd Page</h1>
+        <h1 className="main-heading">Board Page</h1>
 
         <div className="form-container">
           <form onSubmit={this.sendBoardData} className="form-item board-form">
             <h2>게시물 작성</h2>
             <div className="input-field">
-              <input
+              {/* <input
                 type="text"
                 name="userId"
                 onChange={this.handleChange}
                 value={this.state.userId}
                 placeholder="사용자 ID"
                 className="input-field"
-              />
+              /> */}
+              
+            <p>작성자: {this.state.userId = localStorage.getItem('userId')} </p>
+            
             </div>
             <div className="input-field">
               <input
@@ -151,16 +171,9 @@ export class Board extends Component {
                 className="input-field"
               />
             </div>
-            <div className="input-field">
-              <textarea
-                onChange={this.handleChange}
-                value={this.state.boardContent}
-                name="boardContent"
-                placeholder="게시물 내용"
-                className="input-field textarea-field"
-              />
-            </div>
-            <div className="input-field">
+
+            {/* 카테고리 */}
+            <div className="input-field"> 
               {/* <input
                 type="text"
                 name="boardCategory"
@@ -210,16 +223,40 @@ export class Board extends Component {
                 Category 4
               </label>
             </div>
+            <div className="input-field">
+              <textarea
+                onChange={this.handleChange}
+                value={this.state.boardContent}
+                name="boardContent"
+                placeholder="게시물 내용"
+                className="input-field textarea-field"
+              />
+            </div>
+           
 
             <div className="input-field">
-              <input
+              {/* <input
                 type="number"
                 name="rate"
                 onChange={this.handleChange}
                 value={this.state.rate}
                 placeholder="평점"
                 className="input-field"
-              />
+              /> */}
+              {/* 별점 선택 */}
+              <div className="star-rating">
+                {[1, 2, 3, 4, 5].map((value) => (
+                  <span
+                    key={value}
+                    className={`star ${value <= rate ? "selected" : ""}`}
+                    onClick={() => this.handleRateClick(value)}
+                  >
+                    ★
+                  </span>
+                ))}
+              </div>
+              {/* 선택한 평점 출력 */}
+              <p>선택한 평점: {rate}</p>
             </div>
             <button type="submit" className="submit-button">
               게시물 업로드

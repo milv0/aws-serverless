@@ -358,7 +358,9 @@ export class Form extends Component {
                 type="text"
                 name="userId"
                 onChange={this.handleChange}
-                value={this.state.userId}
+                // value={this.state.userId}
+                value={localStorage.getItem('userId')}
+
                 placeholder="사용자 ID"
                 className="input-field"
               />

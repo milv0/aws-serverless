@@ -1,15 +1,7 @@
 import React, { Component } from "react";
 import axios from "axios";
-import "./Form.css";
-// import "./board.css";
-
-import {
-  BrowserRouter as Router,
-  Route,
-  Routes,
-  Link,
-  withRouter,
-} from "react-router-dom";
+import "./Form.css"; // Form 컴포넌트의 CSS 스타일을 가져옵니다.
+import { Link } from "react-router-dom"; // React Router의 Link 컴포넌트를 가져옵니다.
 
 export class Login extends Component {
   constructor(props) {
@@ -17,15 +9,16 @@ export class Login extends Component {
     this.state = {
       chkId: "",
       chkPw: "",
-      isLoggedIn: false,
+      isLoggedIn: false, // 로그인 상태 여부
       isError: false,
       loginMessage: "",
       errorMessage: "",
       systemMessage: "",
-      showBoardButton: false,
+      showBoardButton: false, // Board 페이지로 이동하는 버튼을 표시할 지 여부
     };
     this.handleChange = this.handleChange.bind(this);
     this.handleLogin = this.handleLogin.bind(this);
+    this.handleLogout = this.handleLogout.bind(this);
     this.handleGetAllItem = this.handleGetAllItem.bind(this);
   }
 
@@ -35,9 +28,8 @@ export class Login extends Component {
     this.setState({
       [stateField]: inputValue,
     });
-    console.log(this.state);
   }
-  // 전체 데이터 조회
+
   async handleGetAllItem(event) {
     event.preventDefault();
     try {
@@ -46,14 +38,12 @@ export class Login extends Component {
         items: response.data,
         systemMessage: `전체 데이터 조회 성공!!!`,
       });
-      console.log("handleGetItem state:", this.state, response);
     } catch (error) {
       console.error("Error get item:", error);
       this.setState({ systemMessage: `전체 데이터 조회 실패...` });
     }
   }
 
-  // 로그인
   async handleLogin(event) {
     event.preventDefault();
     const { chkId, chkPw } = this.state;
@@ -64,10 +54,11 @@ export class Login extends Component {
       if (item && item.pw === chkPw) {
         this.setState({
           isError: false,
-          isLoggedIn: true,
+          isLoggedIn: true, // 로그인 상태로 변경
           loginMessage: `ID ${chkId} 로그인 성공!!!`,
-          showBoardButton: true, // 로그인 성공 시 버튼 보이기
+          showBoardButton: true, // 로그인 성공 시 버튼 표시
         });
+        localStorage.setItem("userId", item.id); // 로그인 성공 시 localStorage에 id 값 저장
       } else {
         this.setState({
           isLoggedIn: false,
@@ -87,6 +78,27 @@ export class Login extends Component {
     }
   }
 
+  // 창 이동해도 로그인 유지
+  componentDidMount() {
+    const storedId = localStorage.getItem("userId");
+    if (storedId) {
+      this.setState({
+        isLoggedIn: true,
+        showBoardButton: true,
+      });
+    }
+  }
+
+  // 로그아웃 시 localStorage에 id 삭제
+  handleLogout() {
+    localStorage.removeItem("userId");
+    this.setState({
+      isLoggedIn: false,
+      showBoardButton: false,
+      loginMessage: "",
+    });
+  }
+
   render() {
     const {
       isLoggedIn,
@@ -99,65 +111,65 @@ export class Login extends Component {
 
     return (
       <div className="form-wrapper">
-        {/* Display System Message */}
         <h1 className="system-message">{systemMessage}</h1>
         <h1>Login Page</h1>
 
-        {/* Login */}
         <div className="form-container">
-          <form onSubmit={this.handleLogin} className="form-item">
-            <label className="form-label"> ** Login ** </label>
-            <div className="input-field">
-              <input
-                type="text"
-                name="chkId"
-                onChange={this.handleChange}
-                value={this.state.chkId}
-                placeholder="id"
-                className="input-field"
-              />
+          {/* 로그인 상태일 때 */}
+          {isLoggedIn ? (
+            <div>
+              <h1 className="login-message">{loginMessage}</h1>
+              {/* 로그아웃 버튼 */}
+              <button onClick={this.handleLogout} className="submit-button">
+                Logout
+              </button>
             </div>
-            <div className="input-field">
-              <input
-                type="text"
-                name="chkPw"
-                onChange={this.handleChange}
-                value={this.state.chkPw}
-                placeholder="pw"
-                className="input-field"
-              />
-            </div>
-            <button type="submit" className="submit-button">
-              Login
-            </button>
-          </form>
+          ) : (
+            /* 로그인 상태가 아닐 때 */
+            <form onSubmit={this.handleLogin} className="form-item">
+              <label className="form-label"> ** Login ** </label>
+              <div className="input-field">
+                <input
+                  type="text"
+                  name="chkId"
+                  onChange={this.handleChange}
+                  value={this.state.chkId}
+                  placeholder="id"
+                  className="input-field"
+                />
+              </div>
+              <div className="input-field">
+                <input
+                  type="text"
+                  name="chkPw"
+                  onChange={this.handleChange}
+                  value={this.state.chkPw}
+                  placeholder="pw"
+                  className="input-field"
+                />
+              </div>
+              <button type="submit" className="submit-button">
+                Login
+              </button>
+            </form>
+          )}
         </div>
 
-        {/* Display Login Result */}
-        {isLoggedIn && <h1 className="login-message">{loginMessage}</h1>}
         {isError && <h1 className="error-message">{errorMessage}</h1>}
-
-        {/* Get All Items Button */}
-        {/* <button
-          type="button"
-          className="submit-button"
-          onClick={this.handleGetAllItem}
-        >
-          Get All Items
-        </button> */}
 
         {/* 회원가입 페이지로 이동하는 버튼 */}
         <Link to="/signup" className="submit-button">
           Go to Sign Up page
         </Link>
 
-
+        {/* Board 페이지로 이동하는 버튼 */}
         {showBoardButton && (
           <Link to="/board" className="submit-button">
             Board 페이지로 이동
           </Link>
         )}
-        {/* List output */}
+
+        {/* 전체 아이템 목록 출력 */}
         {Array.isArray(this.state.items) &&
           this.state.items.map(
             (item, index) =>

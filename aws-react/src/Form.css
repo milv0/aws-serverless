@@ -76,3 +76,19 @@
 .submit-button:hover {
   background-color: #0056b3;
 }
+
+
+/* 별점 애니메이션 */
+.star-rating {
+  font-size: 2rem;
+}
+
+.star {
+  cursor: pointer;
+  color: #ccc;
+  transition: color 0.3s ease-in-out;
+}
+
+.star.selected {
+  color: gold;
+}
