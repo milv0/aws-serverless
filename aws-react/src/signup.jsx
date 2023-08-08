@@ -1,20 +1,21 @@
-import React, { Component } from 'react';
-import axios from 'axios';
+import React, { Component } from "react";
+import axios from "axios";
 import "./Form.css";
+import { BrowserRouter as Router, Route, Routes, Link } from "react-router-dom";
 
 class SignUp extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      id: '',
-      name: '',
-      pw: '',
+      id: "",
+      name: "",
+      pw: "",
       items: [], // holds the items fetched from the API
-      getItemId: '', // 데이터 조회
-      deleteItemId: '', // 데이터 삭제
-      chkId: '',
-      chkPw: '',
-      systemMessage: ''
+      getItemId: "", // 데이터 조회
+      deleteItemId: "", // 데이터 삭제
+      chkId: "",
+      chkPw: "",
+      systemMessage: "",
     };
     this.handleSubmit = this.handleSubmit.bind(this);
     this.handleChange = this.handleChange.bind(this);
@@ -35,11 +36,10 @@ class SignUp extends Component {
     event.preventDefault();
     try {
       const { id, pw, name } = this.state;
-      await axios.put("/items",
-        { id: `${id}`, pw: `${pw}`, name: `${name}` });
+      await axios.put("/items", { id: `${id}`, pw: `${pw}`, name: `${name}` });
       this.setState({ systemMessage: `Sign Up 성공!!!` });
     } catch (error) {
-      console.error('Error get item:', error);
+      console.error("Error get item:", error);
       this.setState({ systemMessage: `Sign Up 실패...` });
     }
   }
@@ -51,11 +51,11 @@ class SignUp extends Component {
       const response = await axios.get(`/items`);
       this.setState({
         items: response.data,
-        systemMessage: `전체 데이터 조회 성공!!!`
+        systemMessage: `전체 데이터 조회 성공!!!`,
       });
-      console.log('handleGetItem state:', this.state, response);
+      console.log("handleGetItem state:", this.state, response);
     } catch (error) {
-      console.error('Error get item:', error);
+      console.error("Error get item:", error);
       this.setState({ systemMessage: `전체 데이터 조회 실패...` });
     }
   }
@@ -64,7 +64,7 @@ class SignUp extends Component {
     const { systemMessage } = this.state;
 
     return (
-      <div  className="form-wrapper">
+      <div className="form-wrapper">
         {/* Display System Message */}
         <h1 className="system-message">{systemMessage}</h1>
         <h1>SignUp Page</h1>
@@ -72,7 +72,7 @@ class SignUp extends Component {
         {/* Sign Up */}
         <div className="form-container">
           <form onSubmit={this.handleSubmit} className="form-item">
-            <label> ** Sign Up ** </label>
+            <h2>Sign Up</h2>
             <div className="input-field">
               <input
                 type="text"
@@ -80,6 +80,7 @@ class SignUp extends Component {
                 onChange={this.handleChange}
                 value={this.state.id}
                 placeholder="id"
+                className="input-field"
               />
             </div>
             <div className="input-field">
@@ -89,6 +90,7 @@ class SignUp extends Component {
                 onChange={this.handleChange}
                 value={this.state.pw}
                 placeholder="pw"
+                className="input-field"
               />
             </div>
             <div className="input-field">
@@ -98,33 +100,42 @@ class SignUp extends Component {
                 onChange={this.handleChange}
                 value={this.state.name}
                 placeholder="name"
+                className="input-field"
               />
             </div>
-            <button type="submit" className="signup-button">Sign Up</button>
+            <button type="submit" className="submit-button">
+              Sign Up
+            </button>
           </form>
         </div>
 
         {/* Get All Items Button */}
         <button
           type="button"
-          className="custom-button get-items-button"
+          className="submit-button"
           onClick={this.handleGetAllItem}
         >
           Get All Items
         </button>
 
+        {/* 로그인 페이지로 이동하는 버튼 */}
+        <Link to="/login" className="submit-button">
+          로그인 페이지로 이동
+        </Link>
+
         {/* List output */}
         {Array.isArray(this.state.items) &&
-          this.state.items.map((item, index) => (
-            item && (
-              <div key={index} className="item-container">
-                <p>Created Date: {item.date}</p>
-                <p>ID: {item.id}</p>
-                <p>Password: {item.pw}</p>
-                <p>Name: {item.name}</p>
-              </div>
-            )
-          ))}
+          this.state.items.map(
+            (item, index) =>
+              item && (
+                <div key={index} className="item-container">
+                  <p>Created Date: {item.date}</p>
+                  <p>ID: {item.id}</p>
+                  <p>Password: {item.pw}</p>
+                  <p>Name: {item.name}</p>
+                </div>
+              )
+          )}
       </div>
     );
   }

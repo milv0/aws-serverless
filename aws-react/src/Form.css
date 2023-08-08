@@ -1,59 +1,78 @@
-/* Form.css */
 
-/* Wrapper for the entire Form.js component */
-.form-wrapper {
-    margin: 20px;
-  }
-  
-  /* Main heading style */
-  .main-heading {
-    color: #333;
-  }
-  
-  /* System message style */
-  .system-message {
-    color: #02008f;
-  }
-  
-  /* Form container style */
-  .form-container {
-    margin: 20px 0;
-    padding: 20px;
-    border: 1px solid #ccc;
-  }
-  
-  /* Custom button style */
-  .custom-button {
-    background-color: #4CAF50;
-    color: white;
-    border: none;
-    padding: 10px 20px;
-    text-align: center;
-    text-decoration: none;
-    display: inline-block;
-    font-size: 16px;
-    cursor: pointer;
-    margin-right: 10px;
-  }
-  
-  .custom-button:hover {
-    background-color: #45a049;
-  }
-  
-  /* Login message style */
-  .login-message {
-    color: #008000;
-  }
-  
-  /* Error message style */
-  .error-message {
-    color: #ff0000;
-  }
-  
-  /* Item container style */
-  .item-container {
-    margin: 10px 0;
-    padding: 10px;
-    border: 1px solid #ccc;
-  }
-  
+/* System message style */
+.system-message {
+  color: #02008f;
+}
+
+/* Login message style */
+.login-message {
+  color: #008000;
+}
+
+/* Error message style */
+.error-message {
+  color: #ff0000;
+}
+
+/* 전체 아이템 조회 style */
+.item-container {
+  border: 1px solid #ccc;
+  margin: 10px;
+  padding: 10px;
+  background-color: #f9f9f9;
+  border-radius: 8px;
+
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.item-container p {
+  margin: 5px 0;
+}
+
+/* Form container */
+.form-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin: 20px;
+  padding: 20px;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  background-color: #f5f5f5;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+/* Input fields */
+.input-field {
+  margin-bottom: 10px;
+  width: 100%;
+  padding: 8px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  background-color: #fff;
+  font-size: 14px;
+  box-sizing: border-box; /* 추가된 부분 */
+}
+
+/* Textarea field */
+.textarea-field {
+  resize: vertical; /* 사용자가 세로로 조절 가능하도록 설정 */
+}
+
+/* Submit button */
+.submit-button {
+  margin-top: 15px;
+  padding: 10px 20px;
+  background-color: #007bff;
+  color: #fff;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+  text-decoration: none;
+
+}
+
+.submit-button:hover {
+  background-color: #0056b3;
+}
