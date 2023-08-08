@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import axios from 'axios';
 import "./Form.css";
 
-export class Form extends Component {
+export class Board extends Component {
     constructor(props) {
         super(props);
         this.state = {
@@ -217,10 +217,10 @@ export class Form extends Component {
       <div className="form-wrapper">
         {/* Display System Message */}
         <h1 className="system-message">{systemMessage}</h1>
-        <h1 className="main-heading">Form.js</h1>
+        <h1 className="main-heading">Board Page</h1>
 
         {/* Sign Up */}
-        <div className="form-container">
+        {/* <div className="form-container">
           <form onSubmit={this.handleSubmit} className="form-item">
             <label> ** Sign Up ** </label>
             <div className="input-field">
@@ -252,10 +252,10 @@ export class Form extends Component {
             </div>
             <button type="submit" className="signup-button">Sign Up</button>
           </form>
-        </div>
+        </div> */}
 
         {/* Login */}
-        <div className="form-container">
+        {/* <div className="form-container">
           <form onSubmit={this.handleLogin} className="form-item">
             <label> ** Login ** </label>
             <div className="input-field">
@@ -278,34 +278,34 @@ export class Form extends Component {
             </div>
             <button type="submit" className="signup-button">Login</button>
           </form>
-        </div>
+        </div> */}
 
         {/* Display Login Result */}
-        {isLoggedIn && <h1 className="login-message">{loginMessage}</h1>}
-        {isError && <h1 className="error-message">{errorMessage}</h1>}
+        {/* {isLoggedIn && <h1 className="login-message">{loginMessage}</h1>}
+        {isError && <h1 className="error-message">{errorMessage}</h1>} */}
 
         {/* Get All Items Button */}
-        <button
+        {/* <button
           type="button"
           className="custom-button get-items-button"
           onClick={this.handleGetAllItem}
         >
           Get All Items
-        </button>
+        </button> */}
 
         {/* Add a form for file uploads */}
-        <form onSubmit={this.handleFileUpload}>
+        {/* <form onSubmit={this.handleFileUpload}>
           <label>** Upload file (text file only) ** </label>
           <input
             type="file"
             onChange={this.handleFileChange}
           />
           <button type="submit">Upload File</button>
-        </form>
+        </form> */}
 
 
         {/* Get Item by ID Form */}
-        <form onSubmit={this.handleGetItem}>
+        {/* <form onSubmit={this.handleGetItem}>
           <label>** Get ID ** </label>
           <input
             type="text"
@@ -314,10 +314,10 @@ export class Form extends Component {
             value={this.state.getItemId}
           />
           <button type="submit" className="get-item-button">Get Item</button>
-        </form>
+        </form> */}
 
         {/* Delete Item by ID Form */}
-        <form onSubmit={this.handleDeleteItem}>
+        {/* <form onSubmit={this.handleDeleteItem}>
           <label>** Delete ID ** </label>
           <input
             type="text"
@@ -326,7 +326,7 @@ export class Form extends Component {
             value={this.state.deleteItemId}
           />
           <button type="submit" className="delete-item-button">Delete Item</button>
-        </form>
+        </form> */}
 
         {/* 게시물 */}
         <div className="form-container">
@@ -367,6 +367,12 @@ export class Form extends Component {
                 value={this.state.boardContent}
                 placeholder="boardContent"
               />
+              {/* <textarea
+                onChange={this.handleChange}
+                value={this.state.boardContent}
+                name="content"
+
+              /> */}
             </div>
             <div className="input-field">
               <input
@@ -406,4 +412,4 @@ export class Form extends Component {
     );
   }
 }
-export default Form; // Form 컴포넌트를 일반적인 내보내기로 설정
+export default Board; // Form 컴포넌트를 일반적인 내보내기로 설정

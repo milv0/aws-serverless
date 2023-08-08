@@ -3,6 +3,7 @@ import { BrowserRouter as Router, Route, Routes, Link } from 'react-router-dom';
 import Form from './Form';
 import Login from './login';
 import SignUp from './signup';
+import Board from './board';
 
 import "./App.css";
 
@@ -21,6 +22,9 @@ function App() {
             <li>
               <Link to="/signup">SignUp</Link>
             </li>
+            <li>
+              <Link to="/board">Board</Link>
+            </li>
           </ul>
         </nav>
 
@@ -30,6 +34,8 @@ function App() {
             <Route path="/" element={<Form />} />
             <Route path="/login" element={<Login />} />
             <Route path="/signup" element={<SignUp />} />
+            <Route path="/board" element={<Board />} />
+
           </Routes>
         </div>
       </div>
