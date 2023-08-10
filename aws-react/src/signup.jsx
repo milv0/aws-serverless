@@ -1,6 +1,6 @@
 import React, { Component } from "react";
 import axios from "axios";
-import "./Form.css";
+import "./css/Form.css";
 import { BrowserRouter as Router, Route, Routes, Link } from "react-router-dom";
 
 class SignUp extends Component {

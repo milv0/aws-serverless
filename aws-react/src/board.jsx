@@ -1,6 +1,6 @@
 import React, { Component } from "react";
 import axios from "axios";
-import "./Form.css";
+import "./css/Form.css";
 import { BrowserRouter as Router, Route, Routes, Link } from "react-router-dom";
 
 export class Board extends Component {
@@ -162,8 +162,9 @@ export class Board extends Component {
     return (
       <div className="form-wrapper">
         {/* Display System Message */}
-        <h1 className="system-message">{systemMessage}</h1>
-        <h1 className="main-heading">Board Page</h1>
+        <header className="app-header">
+          <h1>Board</h1>
+        </header>
 
         <div className="form-container">
           <form onSubmit={this.sendBoardData} className="form-item board-form">
@@ -295,13 +296,13 @@ export class Board extends Component {
         </div>
 
         {/* Get All Items Button */}
-        <button
+        {/* <button
           type="button"
           className="submit-button"
           onClick={this.getBoardList}
         >
           Get All boards List
-        </button>
+        </button> */}
         {/* 게시물 작성으로 이동하는 버튼 */}
         <Link to="/boardList" className="submit-button">
           게시물 리스트 페이지로 이동
@@ -323,6 +324,9 @@ export class Board extends Component {
                 </div>
               )
           )}
+
+        <h3 className="system-message">{systemMessage}</h3>
+
       </div>
     );
   }

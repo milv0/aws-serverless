@@ -1,8 +1,8 @@
 import React, { Component } from "react";
 import axios from "axios";
-import "./Form.css";
+// import "./css/Form.css";
+import "./css/boardList.css";
 import { BrowserRouter as Router, Route, Routes, Link } from "react-router-dom";
-
 
 export class BoardList extends Component {
   constructor(props) {
@@ -97,53 +97,72 @@ export class BoardList extends Component {
       </div>
     );
   }
+
+  componentDidMount() {
+    this.fetchUserInfo(); // 페이지 로드 시 사용자 정보 가져오기
+  }
+
+  // 사용자 정보 가져오기
+  async fetchUserInfo() {
+    const userId = localStorage.getItem("userId");
+
+    try {
+      const response = await axios.get(`/items/${userId}`);
+      const userInfo = response.data;
+
+      this.setState({
+        userInfo,
+        showBoardButton: true, // 사용자 정보가 있을 경우 버튼 표시
+      });
+    } catch (error) {
+      console.error("Error fetching user info:", error);
+    }
+  }
+  
   render() {
-    const {
-      isLoggedIn,
-      isError,
-      loginMessage,
-      errorMessage,
-      systemMessage,
-      rate,
-    } = this.state;
+    const { userInfo } = this.state;
+    const isLoggedIn = !!userInfo; // Check if user is logged in
 
     return (
-      <div className="form-wrapper">
-        {/* Display System Message */}
-        <h1 className="system-message">{systemMessage}</h1>
-        <h1 className="main-heading">Board Page</h1>
-
-        {/* Get All Items Button */}
-        <button
-          type="button"
-          className="submit-button"
-          onClick={this.getBoardList}
-        >
-          Get All boards List
-        </button>
-
-        {/* 게시물 작성으로 이동하는 버튼 */}
-        <Link to="/board" className="submit-button">
-         게시물 작성
-        </Link>
-
-        {/* List output */}
-        {Array.isArray(this.state.items) &&
-          this.state.items.map(
-            (item, index) =>
-              item && (
-                <div key={index} className="item-container">
-                  <p>Created Date: {item.date}</p>
-                  <p>UserID: {item.userId}</p>
-                  <p>BoardTitle: {item.boardTitle}</p>
-                  <p>Img: {item.image}</p>
-                  <p>BoardCategory: {item.boardCategory}</p>
-                  <div className="rate-container">
-                    {this.showStars(item.rate)}
-                  </div>
-                </div>
-              )
-          )}
+      <div className="app-container">
+        <header className="app-header">
+          <h1>Board List</h1>
+        </header>
+        <main className="app-main">
+          <div className="board-controls">
+            <button className="get-list-button" onClick={this.getBoardList}>
+              Get All Boards List
+            </button>
+            {/* 로그인 되있을 때만 게시물 작성 버튼 활성화 */}
+            {isLoggedIn && (
+              <Link to="/board" className="submit-button">
+                게시물 작성
+              </Link>
+            )}
+          </div>
+          <div className="board-list">
+            {Array.isArray(this.state.items) &&
+              this.state.items.map(
+                (item, index) =>
+                  item && (
+                    <div key={index} className="board-item">
+                      <div className="board-info">
+                        <p className="board-title">Title: {item.boardTitle}</p>
+                        <p className="board-image">Image: {item.image}</p>
+                        <p className="board-category">
+                          Category: {item.boardCategory}
+                        </p>
+                      </div>
+                      <div className="board-rating">
+                        {this.showStars(item.rate)}
+                        <p className="board-user">작성자: {item.userId}</p>
+                        <p className="board-date">{item.date}</p>
+                      </div>
+                    </div>
+                  )
+              )}
+          </div>
+        </main>
       </div>
     );
   }

@@ -1,6 +1,6 @@
 import React, { Component } from "react";
 import axios from "axios";
-import "./Form.css";
+import "./css/Form.css";
 
 export class Form extends Component {
   constructor(props) {
@@ -349,6 +349,7 @@ export class Form extends Component {
             </button>
           </form>
         </div>
+        
         {/* 게시물 작성 */}
         <div className="form-container">
           <form onSubmit={this.sendBoardData} className="form-item board-form">

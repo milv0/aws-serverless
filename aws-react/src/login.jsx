@@ -1,6 +1,6 @@
 import React, { Component } from "react";
 import axios from "axios";
-import "./Form.css"; // Form 컴포넌트의 CSS 스타일을 가져옵니다.
+import "./css/Form.css"; // Form 컴포넌트의 CSS 스타일을 가져옵니다.
 import { Link } from "react-router-dom"; // React Router의 Link 컴포넌트를 가져옵니다.
 
 export class Login extends Component {
