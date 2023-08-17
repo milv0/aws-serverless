@@ -3,12 +3,13 @@ import { BrowserRouter as Router, Route, Routes, Link } from "react-router-dom";
 import Form from "./Form";
 import Login from "./login";
 import SignUp from "./signup";
-import Board from "./board";
+import Post from "./post";
+import ShowPost from "./showPost"; // 경로를 정확하게 지정하세요
+
 import BoardList from "./boardList"; // Import the BoardList component
 import MyPage from "./myPage";
 import "./css/App.css";
 import "./css/Form.css";
-
 function App() {
   return (
     <Router>
@@ -39,12 +40,15 @@ function App() {
         <Routes>
           <Route path="/login" element={<Login />} />
           <Route path="/signup" element={<SignUp />} />
-          <Route path="/board" element={<Board />} />
+          <Route path="/post" element={<Post />} />
+          {/* <Route path="/showPost" element={<showPost />} /> */}
           <Route path="/boardList" element={<BoardList />} />
           <Route path="/myPage" element={<MyPage />} />
 
+          <Route path="/board/:userId/:date" element={<ShowPost />} />
           {/* <Route path="/" element={<Form />} /> Form as the main page */}
         </Routes>
+        
       </div>
     </Router>
   );

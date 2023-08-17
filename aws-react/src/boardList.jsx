@@ -27,6 +27,7 @@ export class BoardList extends Component {
       type: null,
 
       userId: "",
+      postId: "",
       image: "", //sendImgS3()를 통해 받아온 이미지 데이터
       boardTitle: "",
       boardContent: "",
@@ -39,6 +40,7 @@ export class BoardList extends Component {
     // ㄱㅔ시물
     this.getBoardList = this.getBoardList.bind(this);
     this.handleRateClick = this.handleRateClick.bind(this);
+    // this.handleGetPost = this.handleGetPost.bind(this);
   }
 
   handleChange(event) {
@@ -68,6 +70,22 @@ export class BoardList extends Component {
       this.setState({ systemMessage: `전체 게시물 조회 실패...` });
     }
   }
+
+  // 게시물 가져오기
+  handleGetItem = async (userId, date) => {
+    try {
+      const response = await axios.get(`/boards/${userId}/${date}`);
+      const retrievedItem = response.data;
+
+      this.setState({
+        selectedItem: retrievedItem,
+        systemMessage: "게시물을 성공적으로 가져왔습니다.",
+      });
+    } catch (error) {
+      console.error("항목을 가져오는 중 오류 발생:", error);
+      this.setState({ systemMessage: "게시물 가져오기 실패..." });
+    }
+  };
   // 게시물 삭제
   handleDeleteItem = async (userId, date) => {
     try {
@@ -170,11 +188,27 @@ export class BoardList extends Component {
             </button>
             {/* 로그인 되있을 때만 게시물 작성 버튼 활성화 */}
             {isLoggedIn && (
-              <Link to="/board" className="submit-button">
+              <Link to="/post" className="submit-button">
                 게시물 작성
               </Link>
             )}
           </div>
+
+          {/* 게시물 조회 */}
+          {/* <form onSubmit={this.handleGetPost} className="form-item board-form">
+            <h2>Get Post ID</h2>
+            <input
+              type="text"
+              name="getItemId"
+              onChange={this.handleChange}
+              value={this.state.getItemId}
+              className="input-field-mp"
+            />
+            <br />
+            <button type="submit" className="submit-button">
+              Get ID
+            </button>
+          </form> */}
 
           {/* 사용자 정보 출력 */}
           <div className="form-container">
@@ -199,6 +233,8 @@ export class BoardList extends Component {
                   onClick={() => this.toggleExpandedItem(item.id)}
                 >
                   <div className="board-info">
+                    <p>PostID: {item.postId}</p>
+
                     <p className="board-title">제목: {item.boardTitle}</p>
                     <img src={item.image} alt="게시물" />
                     <p className="board-category">
@@ -209,10 +245,6 @@ export class BoardList extends Component {
                     {this.showStars(item.rate)}
                     <p className="board-user">작성자: {item.userId}</p>
                     <p className="board-date">{item.date}</p>
-                    {/* <p className="board-partition-key">
-                      파티션 키: {item.userId}
-                    </p>
-                    <p className="board-sort-key">정렬 키: {item.date}</p> */}
                   </div>
                   {this.state.expandedItemId === item.id && (
                     <div className="board-content">
@@ -229,6 +261,12 @@ export class BoardList extends Component {
                           삭제
                         </button>
                       )}
+                      <Link
+                        to={`/board/${item.userId}/${item.date}`}
+                        className="get-item-link"
+                      >
+                        항목 가져오기
+                      </Link>
                     </div>
                   )}
                 </div>

@@ -3,8 +3,9 @@ import axios from "axios";
 import "./css/Form.css";
 import { BrowserRouter as Router, Route, Routes, Link } from "react-router-dom";
 import Form from "react-bootstrap/Form";
+import shortId from "shortid";
 
-export class Board extends Component {
+export class Post extends Component {
   constructor(props) {
     super(props);
     this.state = {
@@ -25,11 +26,14 @@ export class Board extends Component {
       type: null,
 
       userId: "",
+      postId: "",
       image: "", //sendImgS3()를 통해 받아온 이미지 데이터
       boardTitle: "",
       boardContent: "",
       boardCategory: "",
       rate: 0,
+      selectedFile: null,
+      uploadedImageUrl: null,
     };
     this.handleChange = this.handleChange.bind(this);
     this.handleFileChange = this.handleFileChange.bind(this);
@@ -48,17 +52,25 @@ export class Board extends Component {
     });
     console.log(this.state);
   }
-  handleFileChange(event) {
+  handleFileChange = (event) => {
     this.setState({
-      file: event.target.files[0],
+      selectedFile: event.target.files[0],
+      uploadedImageUrl: null, // Reset uploaded image URL when selecting a new file
     });
-  }
+  };
 
   // 게시물
   async sendBoardData(event) {
     event.preventDefault();
-    const { userId, image, boardTitle, boardContent, boardCategory, rate } =
-      this.state;
+    const {
+      userId,
+      postId,
+      image,
+      boardTitle,
+      boardContent,
+      boardCategory,
+      rate,
+    } = this.state;
 
     if (!userId) {
       this.setState({ systemMessage: `로그인 되어 있지 않음.,..` });
@@ -67,6 +79,7 @@ export class Board extends Component {
     try {
       await axios.put("/boards", {
         userId: `${userId}`,
+        postId: `${postId}`,
         image: `${image}`,
         boardTitle: `${boardTitle}`,
         boardContent: `${boardContent}`,
@@ -145,20 +158,35 @@ export class Board extends Component {
       </div>
     );
   }
-  render() {
-    const {
-      isLoggedIn,
-      // isError,
-      // loginMessage,
-      // errorMessage,
-      systemMessage,
-      rate,
-    } = this.state;
 
-    // const storedId = isLoggedIn ? localStorage.getItem('userId') : '';
-    // const min =0;
-    // const max= 100000;
-    // let randomNumber = Math.random() * (max-min) + min;
+  handleUpload = async () => {
+    const { selectedFile } = this.state;
+
+    if (!selectedFile) {
+      alert("Please select a file.");
+      return;
+    }
+
+    const formData = new FormData();
+    formData.append("file", selectedFile);
+
+    try {
+      const response = await axios.post("/upload", formData, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      });
+
+      const uploadedImageUrl = response.data.imageUrl;
+      this.setState({ uploadedImageUrl });
+    } catch (error) {
+      console.error("Error uploading image:", error);
+      console.log(error.response); // Check the error response
+    }
+  };
+
+  render() {
+    const { isLoggedIn, systemMessage, rate, uploadedImageUrl } = this.state;
 
     return (
       <div className="form-wrapper">
@@ -171,29 +199,13 @@ export class Board extends Component {
           <form onSubmit={this.sendBoardData} className="form-item board-form">
             <h2>게시물 작성</h2>
             <div className="input-field">
-              {/* <input
-                type="text"
-                name="userId"
-                onChange={this.handleChange}
-                value={this.state.userId}
-                placeholder="사용자 ID"
-                className="input-field"
-              /> */}
-
               <p>
                 작성자: {(this.state.userId = localStorage.getItem("userId"))}{" "}
               </p>
+              <p>게시물 Id: {(this.state.postId = shortId.generate())} </p>
             </div>
-            <div className="input-field">
-              <input
-                type="text"
-                name="image"
-                onChange={this.handleChange}
-                value={this.state.image}
-                placeholder="이미지 URL"
-                className="input-field"
-              />
-            </div>
+
+            {/* 게시물 제목 */}
             <div className="input-field">
               <input
                 type="text"
@@ -205,57 +217,40 @@ export class Board extends Component {
               />
             </div>
 
-            {/* 카테고리 */}
+            {/* 이미지 업로드 (수정 필요) */}
             <div className="input-field">
-              {/* <input
-                type="text"
-                name="boardCategory"
-                onChange={this.handleChange}
-                value={this.state.boardCategory}
-                placeholder="게시물 카테고리"
-                className="input-field"
-              /> */}
-              <label>
-                <input
-                  type="checkbox"
-                  name="boardCategory"
-                  value="category1"
-                  checked={this.state.boardCategory.includes("category1")}
-                  onChange={this.handleCategoryChange}
-                />
-                Category 1
-              </label>
-              <label>
-                <input
-                  type="checkbox"
-                  name="boardCategory"
-                  value="category2"
-                  checked={this.state.boardCategory.includes("category2")}
-                  onChange={this.handleCategoryChange}
-                />
-                Category 2
-              </label>
-              <label>
-                <input
-                  type="checkbox"
-                  name="boardCategory"
-                  value="category3"
-                  checked={this.state.boardCategory.includes("category3")}
-                  onChange={this.handleCategoryChange}
-                />
-                Category 3
-              </label>
-              <label>
-                <input
-                  type="checkbox"
-                  name="boardCategory"
-                  value="category4"
-                  checked={this.state.boardCategory.includes("category4")}
-                  onChange={this.handleCategoryChange}
-                />
-                Category 4
-              </label>
+              <input
+                type="file"
+                accept="image/*"
+                onChange={this.handleFileChange}
+              />
+              <button onClick={this.handleUpload}>Upload</button>
+              {uploadedImageUrl && (
+                <div>
+                  <h3>Uploaded Image:</h3>
+                  <img src={uploadedImageUrl} alt="Uploaded" />
+                </div>
+              )}
             </div>
+
+
+            {/* 카테고리 선택 */}
+            <div className="input-field">
+              <select
+                id="boardCategory"
+                name="boardCategory"
+                value={this.state.boardCategory}
+                onChange={this.handleChange}
+                className="input-field"
+              >
+                <option value="category1">Category 1</option>
+                <option value="category2">Category 2</option>
+                <option value="category3">Category 3</option>
+                <option value="category4">Category 4</option>
+              </select>
+            </div>
+
+            {/* 게시물 내용 */}
             <div className="input-field">
               <textarea
                 onChange={this.handleChange}
@@ -266,16 +261,8 @@ export class Board extends Component {
               />
             </div>
 
+            {/* 별점 선택 */}
             <div className="input-field">
-              {/* <input
-                type="number"
-                name="rate"
-                onChange={this.handleChange}
-                value={this.state.rate}
-                placeholder="평점"
-                className="input-field"
-              /> */}
-              {/* 별점 선택 */}
               <div className="star-rating">
                 {[1, 2, 3, 4, 5].map((value) => (
                   <span
@@ -308,6 +295,8 @@ export class Board extends Component {
                 <div key={index} className="item-container">
                   <p>Created Date: {item.date}</p>
                   <p>UserID: {item.userId}</p>
+                  <p>PostID: {item.postId}</p>
+
                   <p>BoardTitle: {item.boardTitle}</p>
                   <p>Img: {item.image}</p>
                   <p>BoardCategory: {item.boardCategory}</p>
@@ -323,4 +312,4 @@ export class Board extends Component {
     );
   }
 }
-export default Board;
+export default Post;
