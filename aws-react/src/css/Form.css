@@ -54,6 +54,10 @@
   box-sizing: border-box; /* 추가된 부분 */
 }
 
+.input-field-mp {
+  width: 150px;
+}
+
 /* Textarea field */
 .textarea-field {
   resize: vertical; /* 사용자가 세로로 조절 가능하도록 설정 */
@@ -91,4 +95,15 @@
 
 .star.selected {
   color: gold;
+}
+
+/* 확장된 항목의 스타일 */
+.board-item.expanded {
+  background-color: #f0f0f0;
+  cursor: pointer;
+}
+
+/* 확장된 항목의 내용 스타일 */
+.board-item.expanded .board-content {
+  display: block;
 }

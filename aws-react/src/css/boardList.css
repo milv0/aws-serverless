@@ -113,3 +113,13 @@
     color: orange;
   }
   
+  /* 확장된 항목의 스타일 */
+.board-item.expanded {
+  background-color: #f0f0f0;
+  cursor: pointer;
+}
+
+/* 확장된 항목의 내용 스타일 */
+.board-item.expanded .board-content {
+  display: block;
+}

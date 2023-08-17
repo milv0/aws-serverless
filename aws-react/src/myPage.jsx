@@ -9,14 +9,20 @@ export class MyPage extends Component {
     this.state = {
       userInfo: null, // 사용자 정보를 저장할 상태
       showBoardButton: false, // Board 페이지로 이동하는 버튼을 표시할 지 여부
+      getItemId: "",
+      deleteItemId: "",
+      items: [],
+      boards: [],
+      errorMessage: "",
+      systemMessage: "",
     };
     this.handleLogout = this.handleLogout.bind(this);
     this.fetchUserInfo = this.fetchUserInfo.bind(this);
     this.handleChange = this.handleChange.bind(this);
     this.handleGetItem = this.handleGetItem.bind(this);
     this.handleGetAllItem = this.handleGetAllItem.bind(this);
-
     this.handleDeleteItem = this.handleDeleteItem.bind(this);
+    this.getBoardList = this.getBoardList.bind(this);
   }
 
   // 사용자 정보 가져오기
@@ -56,7 +62,7 @@ export class MyPage extends Component {
       showBoardButton: false,
     });
   }
-  // 전체 데이터 조회
+  // 전체 유저 조회
   async handleGetAllItem(event) {
     event.preventDefault();
     try {
@@ -69,6 +75,21 @@ export class MyPage extends Component {
     } catch (error) {
       console.error("Error get item:", error);
       this.setState({ systemMessage: `전체 데이터 조회 실패...` });
+    }
+  }
+  // 전체 게시물 조회
+  async getBoardList(event) {
+    event.preventDefault();
+    try {
+      const response = await axios.get(`/boards`);
+      this.setState({
+        boards: response.data,
+        systemMessage: `전체 게시물 조회 성공!!!`,
+      });
+      console.log("handleGetItem state:", this.state, response);
+    } catch (error) {
+      console.error("Error get item:", error);
+      this.setState({ systemMessage: `전체 게시물 조회 실패...` });
     }
   }
   // 개별 데이터 조회 (id)
@@ -88,6 +109,7 @@ export class MyPage extends Component {
       this.setState({ systemMessage: `조회 실패 (해당 ID 없음)...` });
     }
   }
+
   // 개별 데이터 삭제 (id)
   async handleDeleteItem(event) {
     event.preventDefault();
@@ -103,6 +125,33 @@ export class MyPage extends Component {
       console.error("Error deleting item:", error); // 없는 id 삭제 해도 성공으로 뜸
       this.setState({ systemMessage: `삭제 실패...` });
     }
+  }
+
+  // 별 아이콘을 그리는 함수
+  showStars(value) {
+    const fullStars = Math.floor(value);
+    const halfStar = value - fullStars >= 0.5 ? true : false;
+    const emptyStars = 5 - Math.ceil(value);
+
+    return (
+      <div className="star-rating">
+        {[...Array(fullStars)].map((_, index) => (
+          <span key={index} className="star selected">
+            ★
+          </span>
+        ))}
+        {halfStar && (
+          <span className="star selected">
+            <span className="half-star">★</span>
+          </span>
+        )}
+        {[...Array(emptyStars)].map((_, index) => (
+          <span key={index} className="star">
+            ★
+          </span>
+        ))}
+      </div>
+    );
   }
   render() {
     const { userInfo, showBoardButton } = this.state;
@@ -145,22 +194,31 @@ export class MyPage extends Component {
           className="submit-button"
           onClick={this.handleGetAllItem}
         >
-          Get All Items
+          Get All Users
         </button>
 
-        {/* Get Item by ID Form */}
-        <form onSubmit={this.handleGetItem} cclassName="form-item board-form">
+        {/* Get All Boards Button */}
+        {/* <button
+          type="button"
+          className="submit-button"
+          onClick={this.getBoardList}
+        >
+          Get All Boards
+        </button> */}
+
+        {/* Get User by ID Form */}
+        <form onSubmit={this.handleGetItem} className="form-item board-form">
           <h2>Get ID</h2>
           <input
             type="text"
             name="getItemId"
             onChange={this.handleChange}
             value={this.state.getItemId}
-            className="input-field"
+            className="input-field-mp"
           />
           <br />
           <button type="submit" className="submit-button">
-            Get Item
+            Get ID
           </button>
         </form>
 
@@ -172,14 +230,15 @@ export class MyPage extends Component {
             name="deleteItemId"
             onChange={this.handleChange}
             value={this.state.deleteItemId}
-            className="input-field"
+            className="input-field-mp"
           />{" "}
           <br />
           <button type="submit" className="submit-button">
-            Delete Item
+            Delete ID
           </button>
         </form>
- {/* List output */}
+
+        {/* List output */}
         {Array.isArray(this.state.items) &&
           this.state.items.map(
             (item, index) =>
@@ -192,6 +251,30 @@ export class MyPage extends Component {
                 </div>
               )
           )}
+
+        <div className="board-list">
+          {Array.isArray(this.state.boards) &&
+            this.state.boards.map(
+              (item, index) =>
+                item && (
+                  <div key={index} className="board-item">
+                    <div className="board-info">
+                      <p className="board-title">Title: {item.boardTitle}</p>
+                      <img src={item.image}></img>{" "}
+                      {/* google 이미지 주소를 넣었을 때만 가능 */}
+                      <p className="board-category">
+                        Category: {item.boardCategory}
+                      </p>
+                    </div>
+                    <div className="board-rating">
+                      {this.showStars(item.rate)}
+                      <p className="board-user">작성자: {item.userId}</p>
+                      <p className="board-date">{item.date}</p>
+                    </div>
+                  </div>
+                )
+            )}
+        </div>
         {/* 회원가입 페이지로 이동하는 버튼 */}
         {/* <Link to="/signup" className="submit-button">
           Go to Sign Up page

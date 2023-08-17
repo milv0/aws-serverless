@@ -2,6 +2,7 @@ import React, { Component } from "react";
 import axios from "axios";
 import "./css/Form.css";
 import { BrowserRouter as Router, Route, Routes, Link } from "react-router-dom";
+import Form from "react-bootstrap/Form";
 
 export class Board extends Component {
   constructor(props) {
@@ -295,14 +296,6 @@ export class Board extends Component {
           </form>
         </div>
 
-        {/* Get All Items Button */}
-        {/* <button
-          type="button"
-          className="submit-button"
-          onClick={this.getBoardList}
-        >
-          Get All boards List
-        </button> */}
         {/* 게시물 작성으로 이동하는 버튼 */}
         <Link to="/boardList" className="submit-button">
           게시물 리스트 페이지로 이동
@@ -326,7 +319,6 @@ export class Board extends Component {
           )}
 
         <h3 className="system-message">{systemMessage}</h3>
-
       </div>
     );
   }

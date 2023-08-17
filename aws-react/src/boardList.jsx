@@ -14,6 +14,8 @@ export class BoardList extends Component {
       items: [], // holds the items fetched from the API
       getItemId: "", // 데이터 조회
       deleteItemId: "", // 데이터 삭제
+      getBoardId: "",
+      deleteBoardId: "",
       chkId: "",
       chkPw: "",
       isLoggedIn: false,
@@ -30,6 +32,7 @@ export class BoardList extends Component {
       boardContent: "",
       boardCategory: "",
       rate: 0,
+      expandedItemId: null, // 확장된 항목의 ID를 추적하는 상태 속성
     };
     this.handleChange = this.handleChange.bind(this);
     this.handleFileChange = this.handleFileChange.bind(this);
@@ -52,8 +55,7 @@ export class BoardList extends Component {
     });
   }
 
-  async getBoardList(event) {
-    event.preventDefault();
+  async getBoardList() {
     try {
       const response = await axios.get(`/boards`);
       this.setState({
@@ -66,6 +68,31 @@ export class BoardList extends Component {
       this.setState({ systemMessage: `전체 게시물 조회 실패...` });
     }
   }
+  // 게시물 삭제
+  handleDeleteItem = async (userId, date) => {
+    try {
+      const loggedInUserId = localStorage.getItem("userId");
+      if (userId !== loggedInUserId) {
+        // 로그인된 아이디와 삭제 대상 아이디가 다른 경우
+        this.setState({
+          systemMessage: "해당 게시물을 삭제할 권한이 없습니다.",
+        });
+        return;
+      }
+
+      await axios.delete(`/boards/${userId}/${date}`);
+      this.setState((prevState) => ({
+        items: prevState.items.filter(
+          (item) => item.userId !== userId && item.date !== date
+        ),
+        systemMessage: "게시물이 삭제되었습니다.",
+      }));
+      await this.getBoardList();
+    } catch (error) {
+      console.error("Error deleting item:", error);
+      this.setState({ systemMessage: "게시물 삭제 실패..." });
+    }
+  };
 
   // 게시물 별점 저장하기
   async handleRateClick(rate) {
@@ -100,6 +127,7 @@ export class BoardList extends Component {
 
   componentDidMount() {
     this.fetchUserInfo(); // 페이지 로드 시 사용자 정보 가져오기
+    this.getBoardList();
   }
 
   // 사용자 정보 가져오기
@@ -118,10 +146,17 @@ export class BoardList extends Component {
       console.error("Error fetching user info:", error);
     }
   }
-  
+
+  toggleExpandedItem(itemId) {
+    this.setState((prevState) => ({
+      expandedItemId: prevState.expandedItemId === itemId ? null : itemId,
+    }));
+  }
+
   render() {
     const { userInfo } = this.state;
     const isLoggedIn = !!userInfo; // Check if user is logged in
+    const loggedInUserId = localStorage.getItem("userId"); // 로그인된 아이디
 
     return (
       <div className="app-container">
@@ -140,27 +175,64 @@ export class BoardList extends Component {
               </Link>
             )}
           </div>
+
+          {/* 사용자 정보 출력 */}
+          <div className="form-container">
+            {userInfo ? (
+              <div className="user-info">
+                <p>ID: {userInfo.id}</p>
+                <p>Name: {userInfo.name}</p>
+              </div>
+            ) : (
+              <p>Loading user information...</p>
+            )}
+          </div>
+
           <div className="board-list">
             {Array.isArray(this.state.items) &&
-              this.state.items.map(
-                (item, index) =>
-                  item && (
-                    <div key={index} className="board-item">
-                      <div className="board-info">
-                        <p className="board-title">Title: {item.boardTitle}</p>
-                        <p className="board-image">Image: {item.image}</p>
-                        <p className="board-category">
-                          Category: {item.boardCategory}
-                        </p>
-                      </div>
-                      <div className="board-rating">
-                        {this.showStars(item.rate)}
-                        <p className="board-user">작성자: {item.userId}</p>
-                        <p className="board-date">{item.date}</p>
-                      </div>
+              this.state.items.map((item, index) => (
+                <div
+                  key={index}
+                  className={`board-item ${
+                    this.state.expandedItemId === item.id ? "expanded" : ""
+                  }`}
+                  onClick={() => this.toggleExpandedItem(item.id)}
+                >
+                  <div className="board-info">
+                    <p className="board-title">제목: {item.boardTitle}</p>
+                    <img src={item.image} alt="게시물" />
+                    <p className="board-category">
+                      카테고리: {item.boardCategory}
+                    </p>
+                  </div>
+                  <div className="board-rating">
+                    {this.showStars(item.rate)}
+                    <p className="board-user">작성자: {item.userId}</p>
+                    <p className="board-date">{item.date}</p>
+                    {/* <p className="board-partition-key">
+                      파티션 키: {item.userId}
+                    </p>
+                    <p className="board-sort-key">정렬 키: {item.date}</p> */}
+                  </div>
+                  {this.state.expandedItemId === item.id && (
+                    <div className="board-content">
+                      {item.boardContent}
+                      {loggedInUserId === item.userId && ( // 로그인된 아이디와 게시물 작성자 아이디 비교
+                        <button
+                          className="delete-button"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            this.handleDeleteItem(item.userId, item.date);
+                            this.setState({ expandedItemId: null });
+                          }}
+                        >
+                          삭제
+                        </button>
+                      )}
                     </div>
-                  )
-              )}
+                  )}
+                </div>
+              ))}
           </div>
         </main>
       </div>
