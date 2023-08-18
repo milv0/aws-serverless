@@ -4,8 +4,6 @@ import Form from "./Form";
 import Login from "./login";
 import SignUp from "./signup";
 import Post from "./post";
-import ShowPost from "./showPost"; // 경로를 정확하게 지정하세요
-
 import BoardList from "./boardList"; // Import the BoardList component
 import MyPage from "./myPage";
 import "./css/App.css";
@@ -34,6 +32,9 @@ function App() {
             <li>
               <Link to="/myPage">MyPage</Link>
             </li>
+            <li>
+              <Link to="/post">Post</Link>
+            </li>
           </ul>
         </nav>
 
@@ -41,11 +42,10 @@ function App() {
           <Route path="/login" element={<Login />} />
           <Route path="/signup" element={<SignUp />} />
           <Route path="/post" element={<Post />} />
-          {/* <Route path="/showPost" element={<showPost />} /> */}
           <Route path="/boardList" element={<BoardList />} />
           <Route path="/myPage" element={<MyPage />} />
 
-          <Route path="/board/:userId/:date" element={<ShowPost />} />
+          {/* <Route path="/board/:userId/:date" element={<ShowPost />} /> */}
           {/* <Route path="/" element={<Form />} /> Form as the main page */}
         </Routes>
         

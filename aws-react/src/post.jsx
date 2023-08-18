@@ -12,8 +12,10 @@ export class Post extends Component {
       id: "",
       name: "",
       pw: "",
-      items: [], // holds the items fetched from the API
-      getItemId: "", // 데이터 조회
+      items: [],
+      boards: [],
+      getUserId: "", // Change this to getUserId
+      getDate: "", // Add this state for date
       deleteItemId: "", // 데이터 삭제
       chkId: "",
       chkPw: "",
@@ -42,6 +44,7 @@ export class Post extends Component {
     this.getBoardList = this.getBoardList.bind(this);
     this.handleCategoryChange = this.handleCategoryChange.bind(this);
     this.handleRateClick = this.handleRateClick.bind(this);
+    this.handleGetPost = this.handleGetPost.bind(this);
   }
 
   handleChange(event) {
@@ -108,6 +111,26 @@ export class Post extends Component {
     }
   }
 
+  // 개별 데이터 조회 (id)
+  async handleGetPost(event) {
+    event.preventDefault();
+    const { getUserId, getDate } = this.state;
+
+    try {
+      const response = await axios.get(`/boards/${getUserId}/${getDate}`); // Change the GET URL
+      this.setState({
+        items: [response.data],
+        systemMessage: `User ID ${getUserId}, Date ${getDate} 조회 성공!!!`,
+      });
+      console.log("handleGetItem state:", this.state, response);
+      console.log("조회 성공");
+    } catch (error) {
+      console.error("Error get item:", error);
+      console.log("조회 실패");
+      this.setState({ systemMessage: `조회 실패 (해당 ID 또는 날짜 없음)...` });
+    }
+  }
+
   async handleCategoryChange(event) {
     const selectedCategory = event.target.value;
     const isChecked = event.target.checked;
@@ -160,7 +183,7 @@ export class Post extends Component {
   }
 
   handleUpload = async () => {
-    const { selectedFile } = this.state;
+    const { selectedFile, systemMessage } = this.state;
 
     if (!selectedFile) {
       alert("Please select a file.");
@@ -233,7 +256,6 @@ export class Post extends Component {
               )}
             </div>
 
-
             {/* 카테고리 선택 */}
             <div className="input-field">
               <select
@@ -287,6 +309,16 @@ export class Post extends Component {
         <Link to="/boardList" className="submit-button">
           게시물 리스트 페이지로 이동
         </Link>
+
+        {/* Get All Boards Button */}
+        <button
+          type="button"
+          className="submit-button"
+          onClick={this.getBoardList}
+        >
+          Get All Boards
+        </button>
+
         {/* List output */}
         {Array.isArray(this.state.items) &&
           this.state.items.map(
@@ -296,7 +328,6 @@ export class Post extends Component {
                   <p>Created Date: {item.date}</p>
                   <p>UserID: {item.userId}</p>
                   <p>PostID: {item.postId}</p>
-
                   <p>BoardTitle: {item.boardTitle}</p>
                   <p>Img: {item.image}</p>
                   <p>BoardCategory: {item.boardCategory}</p>

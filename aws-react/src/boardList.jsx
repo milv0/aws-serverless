@@ -72,20 +72,21 @@ export class BoardList extends Component {
   }
 
   // 게시물 가져오기
-  handleGetItem = async (userId, date) => {
-    try {
-      const response = await axios.get(`/boards/${userId}/${date}`);
-      const retrievedItem = response.data;
+  handleGetPostItem = (postId) => {
+    const selectedItem = this.state.items.find(
+      (item) => item.postId === postId
+    );
 
+    if (selectedItem) {
       this.setState({
-        selectedItem: retrievedItem,
+        selectedItem,
         systemMessage: "게시물을 성공적으로 가져왔습니다.",
       });
-    } catch (error) {
-      console.error("항목을 가져오는 중 오류 발생:", error);
-      this.setState({ systemMessage: "게시물 가져오기 실패..." });
+    } else {
+      this.setState({ systemMessage: "해당 게시물을 찾을 수 없습니다." });
     }
   };
+
   // 게시물 삭제
   handleDeleteItem = async (userId, date) => {
     try {
@@ -194,22 +195,6 @@ export class BoardList extends Component {
             )}
           </div>
 
-          {/* 게시물 조회 */}
-          {/* <form onSubmit={this.handleGetPost} className="form-item board-form">
-            <h2>Get Post ID</h2>
-            <input
-              type="text"
-              name="getItemId"
-              onChange={this.handleChange}
-              value={this.state.getItemId}
-              className="input-field-mp"
-            />
-            <br />
-            <button type="submit" className="submit-button">
-              Get ID
-            </button>
-          </form> */}
-
           {/* 사용자 정보 출력 */}
           <div className="form-container">
             {userInfo ? (
@@ -219,6 +204,23 @@ export class BoardList extends Component {
               </div>
             ) : (
               <p>Loading user information...</p>
+            )}
+          </div>
+
+          <div className="selected-item">
+            {this.state.selectedItem && (
+              <div>
+                <h2>선택한 게시물</h2>
+                <p>날짜: {this.state.selectedItem.date}</p>
+
+                <p>PostID: {this.state.selectedItem.postId}</p>
+                <p>제목: {this.state.selectedItem.boardTitle}</p>
+                <p>작성자: {this.state.selectedItem.userId}</p>
+                <p>내용: {this.state.selectedItem.boardContent}</p>
+
+                {this.showStars(this.state.selectedItem.rate)}
+                <p></p>
+              </div>
             )}
           </div>
 
@@ -246,7 +248,29 @@ export class BoardList extends Component {
                     <p className="board-user">작성자: {item.userId}</p>
                     <p className="board-date">{item.date}</p>
                   </div>
-                  {this.state.expandedItemId === item.id && (
+
+                  <button
+                    className="get-post-button"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      this.handleGetPostItem(item.postId);
+                    }}
+                  >
+                    게시물 가져오기
+                  </button>
+                  {loggedInUserId === item.userId && ( // 로그인된 아이디와 게시물 작성자 아이디 비교
+                    <button
+                      className="delete-button"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        this.handleDeleteItem(item.userId, item.date);
+                        this.setState({ expandedItemId: null });
+                      }}
+                    >
+                      삭제
+                    </button>
+                  )}
+                  {/* {this.state.expandedItemId === item.id && (
                     <div className="board-content">
                       {item.boardContent}
                       {loggedInUserId === item.userId && ( // 로그인된 아이디와 게시물 작성자 아이디 비교
@@ -261,14 +285,8 @@ export class BoardList extends Component {
                           삭제
                         </button>
                       )}
-                      <Link
-                        to={`/board/${item.userId}/${item.date}`}
-                        className="get-item-link"
-                      >
-                        항목 가져오기
-                      </Link>
                     </div>
-                  )}
+                  )} */}
                 </div>
               ))}
           </div>

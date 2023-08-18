@@ -198,13 +198,13 @@ export class MyPage extends Component {
         </button>
 
         {/* Get All Boards Button */}
-        <button
+        {/* <button
           type="button"
           className="submit-button"
           onClick={this.getBoardList}
         >
           Get All Boards
-        </button>
+        </button> */}
 
         {/* Get User by ID Form */}
         <form onSubmit={this.handleGetItem} className="form-item board-form">
