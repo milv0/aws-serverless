@@ -1,24 +1,22 @@
 import React, { Component } from "react";
 import axios from "axios";
-import "./css/Form.css";
+// import "./css/Form.css";
 import { BrowserRouter as Router, Route, Routes, Link } from "react-router-dom";
-import Form from "react-bootstrap/Form";
+// import Form from "react-bootstrap/Form";
 import shortId from "shortid";
+import "bootstrap/dist/css/bootstrap.min.css";
+import Form from "react-bootstrap/Form";
+import Button from "react-bootstrap/Button";
 
 export class Post extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      id: "",
-      name: "",
-      pw: "",
       items: [],
       boards: [],
       getUserId: "", // Change this to getUserId
       getDate: "", // Add this state for date
       deleteItemId: "", // 데이터 삭제
-      chkId: "",
-      chkPw: "",
       isLoggedIn: false,
       isError: false,
       loginMessage: "",
@@ -32,7 +30,7 @@ export class Post extends Component {
       image: "", //sendImgS3()를 통해 받아온 이미지 데이터
       boardTitle: "",
       boardContent: "",
-      boardCategory: "",
+      boardCategory: "basic Catg",
       rate: 0,
       selectedFile: null,
       uploadedImageUrl: null,
@@ -212,79 +210,81 @@ export class Post extends Component {
     const { isLoggedIn, systemMessage, rate, uploadedImageUrl } = this.state;
 
     return (
-      <div className="form-wrapper">
-        {/* Display System Message */}
+      <div className="container mt-4">
         <header className="app-header">
           <h1>Board</h1>
         </header>
 
-        <div className="form-container">
-          <form onSubmit={this.sendBoardData} className="form-item board-form">
+        <div className="form-container mt-4">
+          <Form onSubmit={this.sendBoardData} className="form-item board-form">
             <h2>게시물 작성</h2>
-            <div className="input-field">
-              <p>
-                작성자: {(this.state.userId = localStorage.getItem("userId"))}{" "}
-              </p>
-              <p>게시물 Id: {(this.state.postId = shortId.generate())} </p>
-            </div>
+            <Form.Group>
+              <Form.Label>작성자</Form.Label>
+              <p>{(this.state.userId = localStorage.getItem("userId"))}</p>
+            </Form.Group>
+            <Form.Group>
+              <Form.Label>게시물 Id</Form.Label>
+              <p>{(this.state.postId = shortId.generate())}</p>
+            </Form.Group>
 
-            {/* 게시물 제목 */}
-            <div className="input-field">
-              <input
+            <Form.Group>
+              <Form.Label>게시물 제목</Form.Label>
+              <Form.Control
                 type="text"
                 name="boardTitle"
                 onChange={this.handleChange}
                 value={this.state.boardTitle}
                 placeholder="게시물 제목"
-                className="input-field"
               />
-            </div>
+            </Form.Group>
 
-            {/* 이미지 업로드 (수정 필요) */}
-            <div className="input-field">
-              <input
+            <Form.Group>
+              <Form.Label>이미지 업로드</Form.Label>
+              <Form.Control
                 type="file"
                 accept="image/*"
                 onChange={this.handleFileChange}
               />
-              <button onClick={this.handleUpload}>Upload</button>
+              <Button variant="info" onClick={this.handleUpload}>
+                Upload
+              </Button>
               {uploadedImageUrl && (
                 <div>
                   <h3>Uploaded Image:</h3>
                   <img src={uploadedImageUrl} alt="Uploaded" />
                 </div>
               )}
-            </div>
+            </Form.Group>
 
-            {/* 카테고리 선택 */}
-            <div className="input-field">
-              <select
+            <Form.Group>
+              <Form.Label>카테고리 선택</Form.Label>
+              <Form.Control
+                as="select"
                 id="boardCategory"
                 name="boardCategory"
                 value={this.state.boardCategory}
                 onChange={this.handleChange}
-                className="input-field"
               >
                 <option value="category1">Category 1</option>
                 <option value="category2">Category 2</option>
                 <option value="category3">Category 3</option>
                 <option value="category4">Category 4</option>
-              </select>
-            </div>
+              </Form.Control>
+            </Form.Group>
 
-            {/* 게시물 내용 */}
-            <div className="input-field">
-              <textarea
+            <Form.Group>
+              <Form.Label>게시물 내용</Form.Label>
+              <Form.Control
+                as="textarea"
                 onChange={this.handleChange}
                 value={this.state.boardContent}
                 name="boardContent"
                 placeholder="게시물 내용"
-                className="input-field textarea-field"
               />
-            </div>
+            </Form.Group>
 
-            {/* 별점 선택 */}
-            <div className="input-field">
+            <Form.Group>
+              <Form.Label>별점 선택</Form.Label>
               <div className="star-rating">
                 {[1, 2, 3, 4, 5].map((value) => (
                   <span
@@ -296,35 +296,34 @@ export class Post extends Component {
                   </span>
                 ))}
               </div>
-              {/* 선택한 평점 출력 */}
               <p>선택한 평점: {rate}</p>
-            </div>
-            <button type="submit" className="submit-button">
+            </Form.Group>
+
+            <Button type="submit" variant="primary">
               게시물 업로드
-            </button>
-          </form>
+            </Button>
+          </Form>
         </div>
 
-        {/* 게시물 작성으로 이동하는 버튼 */}
-        <Link to="/boardList" className="submit-button">
+        <Link to="/boardList" className="btn btn-secondary mt-3">
           게시물 리스트 페이지로 이동
         </Link>
 
-        {/* Get All Boards Button */}
-        <button
+        <Button
           type="button"
-          className="submit-button"
+          variant="info"
+          className="mt-3"
           onClick={this.getBoardList}
         >
           Get All Boards
-        </button>
+        </Button>
 
         {/* List output */}
         {Array.isArray(this.state.items) &&
           this.state.items.map(
             (item, index) =>
               item && (
-                <div key={index} className="item-container">
+                <div key={index} className="item-container mt-4">
                   <p>Created Date: {item.date}</p>
                   <p>UserID: {item.userId}</p>
                   <p>PostID: {item.postId}</p>
@@ -338,7 +337,7 @@ export class Post extends Component {
               )
           )}
 
-        <h3 className="system-message">{systemMessage}</h3>
+        <h3 className="system-message mt-3">{systemMessage}</h3>
       </div>
     );
   }

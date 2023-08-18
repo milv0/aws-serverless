@@ -1,8 +1,10 @@
 import React, { Component } from "react";
 import axios from "axios";
-import "./css/Form.css";
+// import "./css/Form.css";
 import { BrowserRouter as Router, Route, Routes, Link } from "react-router-dom";
-
+import 'bootstrap/dist/css/bootstrap.min.css';
+import Form from 'react-bootstrap/Form';
+import Button from 'react-bootstrap/Button';
 class SignUp extends Component {
   constructor(props) {
     super(props);
@@ -64,71 +66,63 @@ class SignUp extends Component {
     const { systemMessage } = this.state;
 
     return (
-      <div className="form-wrapper">
-        {/* Display System Message */}
+<div className="container mt-4">
         <h1 className="system-message">{systemMessage}</h1>
         <h1>SignUp Page</h1>
 
-        {/* Sign Up */}
-        <div className="form-container">
-          <form onSubmit={this.handleSubmit} className="form-item">
+        <div className="form-container mt-4">
+          <Form onSubmit={this.handleSubmit} className="form-item">
             <h2>Sign Up</h2>
-            <div className="input-field">
-              <input
+            <Form.Group className="mb-3">
+              <Form.Control
                 type="text"
                 name="id"
                 onChange={this.handleChange}
                 value={this.state.id}
-                placeholder="id"
-                className="input-field"
+                placeholder="ID"
               />
-            </div>
-            <div className="input-field">
-              <input
-                type="text"
+            </Form.Group>
+            <Form.Group className="mb-3">
+              <Form.Control
+                type="password"
                 name="pw"
                 onChange={this.handleChange}
                 value={this.state.pw}
-                placeholder="pw"
-                className="input-field"
+                placeholder="Password"
               />
-            </div>
-            <div className="input-field">
-              <input
+            </Form.Group>
+            <Form.Group className="mb-3">
+              <Form.Control
                 type="text"
                 name="name"
                 onChange={this.handleChange}
                 value={this.state.name}
-                placeholder="name"
-                className="input-field"
+                placeholder="Name"
               />
-            </div>
-            <button type="submit" className="submit-button">
+            </Form.Group>
+            <Button type="submit" variant="primary">
               Sign Up
-            </button>
-          </form>
+            </Button>
+          </Form>
         </div>
 
-        {/* Get All Items Button */}
         <button
           type="button"
-          className="submit-button"
+          className="btn btn-secondary mt-3"
           onClick={this.handleGetAllItem}
         >
           Get All Items
         </button>
 
-        {/* 로그인 페이지로 이동하는 버튼 */}
-        <Link to="/login" className="submit-button">
-          로그인 페이지로 이동
+        <Link to="/login" className="btn btn-info mt-3">
+          Go to Login page
         </Link>
 
-        {/* List output */}
         {Array.isArray(this.state.items) &&
           this.state.items.map(
             (item, index) =>
               item && (
-                <div key={index} className="item-container">
+                <div key={index} className="item-container mt-4">
                   <p>Created Date: {item.date}</p>
                   <p>ID: {item.id}</p>
                   <p>Password: {item.pw}</p>

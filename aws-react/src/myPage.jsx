@@ -1,7 +1,8 @@
 import React, { Component } from "react";
 import axios from "axios";
-import "./css/Form.css"; // Form 컴포넌트의 CSS 스타일을 가져옵니다.
+// import "./css/Form.css"; // Form 컴포넌트의 CSS 스타일을 가져옵니다.
 import { Link } from "react-router-dom"; // React Router의 Link 컴포넌트를 가져옵니다.
+import "bootstrap/dist/css/bootstrap.min.css";
 
 export class MyPage extends Component {
   constructor(props) {
@@ -158,19 +159,20 @@ export class MyPage extends Component {
     const isLoggedIn = !!userInfo; // Check if user is logged in
 
     return (
-      <div className="form-wrapper">
+      <div className="container mt-4">
         <header className="app-header">
           <h1>MyPage</h1>
         </header>
 
-        <div className="form-container">
-          {/* 사용자 정보 출력 */}
+        <div className="form-container mt-4">
           {userInfo ? (
             <div className="user-info">
               <p>ID: {userInfo.id}</p>
               <p>Name: {userInfo.name}</p>
-              {/* 로그아웃 버튼 */}
-              <button onClick={this.handleLogout} className="submit-button">
+              <button
+                onClick={this.handleLogout}
+                className="btn btn-danger mt-3"
+              >
                 Logout
               </button>
             </div>
@@ -178,9 +180,8 @@ export class MyPage extends Component {
             <p>Loading user information...</p>
           )}
 
-          {/* 로그인 버튼 또는 사용자 정보 표시 */}
           {!isLoggedIn ? (
-            <Link to="/login" className="submit-button">
+            <Link to="/login" className="btn btn-primary mt-3">
               Login
             </Link>
           ) : (
@@ -188,62 +189,51 @@ export class MyPage extends Component {
           )}
         </div>
 
-        {/* Get All Items Button */}
         <button
           type="button"
-          className="submit-button"
+          className="btn btn-secondary mt-3"
           onClick={this.handleGetAllItem}
         >
           Get All Users
         </button>
 
-        {/* Get All Boards Button */}
-        {/* <button
-          type="button"
-          className="submit-button"
-          onClick={this.getBoardList}
-        >
-          Get All Boards
-        </button> */}
+        {/* 여기에 Get All Boards 버튼 추가 */}
 
-        {/* Get User by ID Form */}
-        <form onSubmit={this.handleGetItem} className="form-item board-form">
+        <form onSubmit={this.handleGetItem} className="form-item mt-4">
           <h2>Get ID</h2>
           <input
             type="text"
             name="getItemId"
             onChange={this.handleChange}
             value={this.state.getItemId}
-            className="input-field-mp"
+            className="form-control"
           />
           <br />
-          <button type="submit" className="submit-button">
+          <button type="submit" className="btn btn-primary">
             Get ID
           </button>
         </form>
 
-        {/* Delete Item by ID Form */}
-        <form onSubmit={this.handleDeleteItem} className="form-item board-form">
+        <form onSubmit={this.handleDeleteItem} className="form-item mt-4">
           <h2>Delete ID</h2>
           <input
             type="text"
             name="deleteItemId"
             onChange={this.handleChange}
             value={this.state.deleteItemId}
-            className="input-field-mp"
+            className="form-control"
           />{" "}
           <br />
-          <button type="submit" className="submit-button">
+          <button type="submit" className="btn btn-danger">
             Delete ID
           </button>
         </form>
 
-        {/* List output */}
         {Array.isArray(this.state.items) &&
           this.state.items.map(
             (item, index) =>
               item && (
-                <div key={index} className="item-container">
+                <div key={index} className="item-container mt-4">
                   <p>ID: {item.id}</p>
                   <p>Password: {item.pw}</p>
                   <p>Name: {item.name}</p>
@@ -252,7 +242,7 @@ export class MyPage extends Component {
               )
           )}
 
-        <div className="board-list">
+        <div className="board-list mt-4">
           {Array.isArray(this.state.boards) &&
             this.state.boards.map(
               (item, index) =>
@@ -260,8 +250,7 @@ export class MyPage extends Component {
                   <div key={index} className="board-item">
                     <div className="board-info">
                       <p className="board-title">Title: {item.boardTitle}</p>
-                      <img src={item.image}></img>{" "}
-                      {/* google 이미지 주소를 넣었을 때만 가능 */}
+                      <img src={item.image} alt="Board Thumbnail" />
                       <p className="board-category">
                         Category: {item.boardCategory}
                       </p>
@@ -275,10 +264,6 @@ export class MyPage extends Component {
                 )
             )}
         </div>
-        {/* 회원가입 페이지로 이동하는 버튼 */}
-        {/* <Link to="/signup" className="submit-button">
-          Go to Sign Up page
-        </Link> */}
       </div>
     );
   }

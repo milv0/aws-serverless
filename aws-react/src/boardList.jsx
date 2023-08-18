@@ -3,6 +3,7 @@ import axios from "axios";
 // import "./css/Form.css";
 import "./css/boardList.css";
 import { BrowserRouter as Router, Route, Routes, Link } from "react-router-dom";
+import "bootstrap/dist/css/bootstrap.min.css";
 
 export class BoardList extends Component {
   constructor(props) {
@@ -178,29 +179,30 @@ export class BoardList extends Component {
     const loggedInUserId = localStorage.getItem("userId"); // 로그인된 아이디
 
     return (
-      <div className="app-container">
-        <header className="app-header">
+      <div className="container">
+        <header className="mt-4">
           <h1>Board List</h1>
         </header>
-        <main className="app-main">
-          <div className="board-controls">
-            <button className="get-list-button" onClick={this.getBoardList}>
+        <main className="mt-4">
+          <div className="d-flex justify-content-between align-items-center mb-4">
+            <button className="btn btn-primary" onClick={this.getBoardList}>
               Get All Boards List
             </button>
-            {/* 로그인 되있을 때만 게시물 작성 버튼 활성화 */}
             {isLoggedIn && (
-              <Link to="/post" className="submit-button">
+              <Link to="/post" className="btn btn-success">
                 게시물 작성
               </Link>
             )}
           </div>
 
-          {/* 사용자 정보 출력 */}
-          <div className="form-container">
+          <div className="mb-4">
             {userInfo ? (
-              <div className="user-info">
-                <p>ID: {userInfo.id}</p>
-                <p>Name: {userInfo.name}</p>
+              <div className="card">
+                <div className="card-header">사용자 정보</div>
+                <div className="card-body">
+                  <p className="card-text">ID: {userInfo.id}</p>
+                  <p className="card-text">Name: {userInfo.name}</p>
+                </div>
               </div>
             ) : (
               <p>Loading user information...</p>
@@ -209,84 +211,56 @@ export class BoardList extends Component {
 
           <div className="selected-item">
             {this.state.selectedItem && (
-              <div>
-                <h2>선택한 게시물</h2>
+              <div className="selected-content p-4 border">
+                <h2 className="mb-4">선택한 게시물</h2>
                 <p>날짜: {this.state.selectedItem.date}</p>
-
                 <p>PostID: {this.state.selectedItem.postId}</p>
                 <p>제목: {this.state.selectedItem.boardTitle}</p>
                 <p>작성자: {this.state.selectedItem.userId}</p>
                 <p>내용: {this.state.selectedItem.boardContent}</p>
 
                 {this.showStars(this.state.selectedItem.rate)}
-                <p></p>
               </div>
             )}
           </div>
 
-          <div className="board-list">
+          <div className="row">
             {Array.isArray(this.state.items) &&
               this.state.items.map((item, index) => (
-                <div
-                  key={index}
-                  className={`board-item ${
-                    this.state.expandedItemId === item.id ? "expanded" : ""
-                  }`}
-                  onClick={() => this.toggleExpandedItem(item.id)}
-                >
-                  <div className="board-info">
-                    <p>PostID: {item.postId}</p>
-
-                    <p className="board-title">제목: {item.boardTitle}</p>
-                    <img src={item.image} alt="게시물" />
-                    <p className="board-category">
-                      카테고리: {item.boardCategory}
-                    </p>
-                  </div>
-                  <div className="board-rating">
-                    {this.showStars(item.rate)}
-                    <p className="board-user">작성자: {item.userId}</p>
-                    <p className="board-date">{item.date}</p>
-                  </div>
-
-                  <button
-                    className="get-post-button"
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      this.handleGetPostItem(item.postId);
-                    }}
-                  >
-                    게시물 가져오기
-                  </button>
-                  {loggedInUserId === item.userId && ( // 로그인된 아이디와 게시물 작성자 아이디 비교
-                    <button
-                      className="delete-button"
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        this.handleDeleteItem(item.userId, item.date);
-                        this.setState({ expandedItemId: null });
-                      }}
-                    >
-                      삭제
-                    </button>
-                  )}
-                  {/* {this.state.expandedItemId === item.id && (
-                    <div className="board-content">
-                      {item.boardContent}
-                      {loggedInUserId === item.userId && ( // 로그인된 아이디와 게시물 작성자 아이디 비교
+                <div key={index} className="col-md-4 mb-4">
+                  <div className="card">
+                    {/* <img
+                      src={item.image}
+                      className="card-img-top"
+                      alt="게시물"
+                    /> */}
+                    <div className="card-body">
+                      <h5 className="card-title">{item.boardTitle}</h5>
+                      <p className="card-text">{item.boardCategory}</p>
+                      <p className="card-text">{item.date}</p>
+                      {this.showStars(item.rate)}
+                      <button
+                        className="btn btn-primary get-post-button"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          this.handleGetPostItem(item.postId);
+                        }}
+                      >
+                        게시물 가져오기
+                      </button>
+                      {loggedInUserId === item.userId && (
                         <button
-                          className="delete-button"
+                          className="btn btn-danger"
                           onClick={(e) => {
                             e.stopPropagation();
                             this.handleDeleteItem(item.userId, item.date);
-                            this.setState({ expandedItemId: null });
                           }}
                         >
                           삭제
                         </button>
                       )}
                     </div>
-                  )} */}
+                  </div>
                 </div>
               ))}
           </div>
@@ -295,4 +269,5 @@ export class BoardList extends Component {
     );
   }
 }
+
 export default BoardList;

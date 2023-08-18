@@ -1,7 +1,10 @@
 import React, { Component } from "react";
 import axios from "axios";
-import "./css/Form.css"; // Form 컴포넌트의 CSS 스타일을 가져옵니다.
+// import "./css/Form.css"; // Form 컴포넌트의 CSS 스타일을 가져옵니다.
 import { Link } from "react-router-dom"; // React Router의 Link 컴포넌트를 가져옵니다.
+import "bootstrap/dist/css/bootstrap.min.css";
+import Form from "react-bootstrap/Form";
+import Button from "react-bootstrap/Button";
 
 export class Login extends Component {
   constructor(props) {
@@ -110,62 +113,59 @@ export class Login extends Component {
     } = this.state;
 
     return (
-      <div className="form-wrapper">
+      <div className="container mt-4">
         <h1 className="system-message">{systemMessage}</h1>
         <h1>Login Page</h1>
 
-        <div className="form-container">
-          {/* 로그인 상태일 때 */}
+        <div className="form-container mt-4">
           {isLoggedIn ? (
             <div>
               <h1 className="login-message">{loginMessage}</h1>
-              {/* 로그아웃 버튼 */}
-              <button onClick={this.handleLogout} className="submit-button">
+              <Button
+                onClick={this.handleLogout}
+                variant="danger"
+                className="mt-3"
+              >
                 Logout
-              </button>
+              </Button>
             </div>
           ) : (
-            /* 로그인 상태가 아닐 때 */
-            <form onSubmit={this.handleLogin} className="form-item">
-              <label className="form-label"> ** Login ** </label>
-              <div className="input-field">
-                <input
+            <Form onSubmit={this.handleLogin} className="form-item">
+              <Form.Label className="form-label">** Login **</Form.Label>
+              <Form.Group className="mb-3">
+                <Form.Control
                   type="text"
                   name="chkId"
                   onChange={this.handleChange}
                   value={this.state.chkId}
-                  placeholder="id"
-                  className="input-field"
+                  placeholder="ID"
                 />
-              </div>
-              <div className="input-field">
-                <input
-                  type="text"
+              </Form.Group>
+              <Form.Group className="mb-3">
+                <Form.Control
+                  type="password"
                   name="chkPw"
                   onChange={this.handleChange}
                   value={this.state.chkPw}
-                  placeholder="pw"
-                  className="input-field"
+                  placeholder="Password"
                 />
-              </div>
-              <button type="submit" className="submit-button">
+              </Form.Group>
+              <Button type="submit" variant="primary">
                 Login
-              </button>
-            </form>
+              </Button>
+            </Form>
           )}
         </div>
 
-        {isError && <h1 className="error-message">{errorMessage}</h1>}
+        {isError && <h1 className="error-message mt-3">{errorMessage}</h1>}
 
-        {/* 회원가입 페이지로 이동하는 버튼 */}
-        <Link to="/signup" className="submit-button">
+        <Link to="/signup" className="btn btn-secondary mt-3">
           Go to Sign Up page
         </Link>
 
-        {/* Board 페이지로 이동하는 버튼 */}
         {showBoardButton && (
-          <Link to="/boardList" className="submit-button">
-            Board 페이지로 이동
+          <Link to="/boardList" className="btn btn-success mt-3">
+            Go to Board page
           </Link>
         )}
 
@@ -174,7 +174,7 @@ export class Login extends Component {
           this.state.items.map(
             (item, index) =>
               item && (
-                <div key={index} className="item-container">
+                <div key={index} className="item-container mt-4">
                   <p>Created Date: {item.date}</p>
                   <p>ID: {item.id}</p>
                   <p>Password: {item.pw}</p>
