@@ -5,7 +5,9 @@ import "./css/boardList.css";
 import { BrowserRouter as Router, Route, Routes, Link } from "react-router-dom";
 import "bootstrap/dist/css/bootstrap.min.css";
 import PostDetail from "./PostDetail";
-// import { Route } from "react-router-dom";
+import Form from "react-bootstrap/Form";
+import Button from "react-bootstrap/Button";
+import shortId from "shortid";
 
 export class BoardList extends Component {
   constructor(props) {
@@ -15,6 +17,7 @@ export class BoardList extends Component {
       name: "",
       pw: "",
       items: [], // holds the items fetched from the API
+      comments: [],
       getItemId: "", // 데이터 조회
       deleteItemId: "", // 데이터 삭제
       getBoardId: "",
@@ -37,12 +40,17 @@ export class BoardList extends Component {
       boardCategory: "",
       rate: 0,
       expandedItemId: null, // 확장된 항목의 ID를 추적하는 상태 속성
+      commentId: "",
+      postComment: "",
     };
     this.handleChange = this.handleChange.bind(this);
     this.handleFileChange = this.handleFileChange.bind(this);
     // ㄱㅔ시물
     this.getBoardList = this.getBoardList.bind(this);
+    this.getCommentList = this.getCommentList.bind(this);
+
     this.handleRateClick = this.handleRateClick.bind(this);
+    this.sendCommentData = this.sendCommentData.bind(this);
     // this.handleGetPost = this.handleGetPost.bind(this);
   }
 
@@ -117,6 +125,47 @@ export class BoardList extends Component {
     }
   };
 
+  // 댓글 전체 조회
+  async getCommentList() {
+    try {
+      const response = await axios.get(`/comments`);
+      this.setState({
+        comments: response.data,
+        systemMessage: `전체 댓글 조회 성공!!!`,
+      });
+      console.log("handleGetItem state:", this.state, response);
+    } catch (error) {
+      console.error("Error get item:", error);
+      this.setState({ systemMessage: `전체 댓글 조회 실패...` });
+    }
+  }
+
+  // 댓글 작성
+  async sendCommentData(event) {
+    event.preventDefault();
+    const { commentId, postId, userId, postComment } = this.state;
+
+    if (!userId) {
+      this.setState({ systemMessage: `로그인 되어 있지 않음.,..` });
+      return;
+    }
+    try {
+      await axios.put("/comments", {
+        commentId: `${commentId}`,
+        postId: `${postId}`,
+        userId: `${userId}`,
+        postComment: `${postComment}`,
+      });
+      this.setState({ systemMessage: `댓글 업로드 성공!!!` });
+    } catch (error) {
+      console.error("Error get item:", error);
+      this.setState({ systemMessage: `댓글 업로드 실패...` });
+    }
+  }
+  // 댓글 삭제
+  handleDeleteComment = async (commentId, postId) => {
+
+  };
   // 게시물 별점 저장하기
   async handleRateClick(rate) {
     this.setState({ rate });
@@ -151,6 +200,7 @@ export class BoardList extends Component {
   componentDidMount() {
     this.fetchUserInfo(); // 페이지 로드 시 사용자 정보 가져오기
     this.getBoardList();
+    this.getCommentList();
   }
 
   // 사용자 정보 가져오기
@@ -212,7 +262,7 @@ export class BoardList extends Component {
             )}
           </div>
 
-          {/* 게시물 가져오기 */}
+          {/* 게시물 클릭시 세부정보 가져오기 */}
           <div className="selected-item">
             {this.state.selectedItem && (
               <div className="selected-content p-4 border">
@@ -225,9 +275,90 @@ export class BoardList extends Component {
                 {this.showStars(this.state.selectedItem.rate)}
               </div>
             )}
+            {/* 댓글 리스트 */}
+            {this.state.selectedItem && (
+            <div className="row">
+              {Array.isArray(this.state.comments) &&
+                this.state.comments.map((item, index) => (
+                  <div key={index} className="col-md-4 mb-4">
+                    <div className="card">
+                      <div className="card-body">
+                        {/* <h5 className="card-title">{item.commentId}</h5> */}
+                        {/* <p className="card-text">{item.postId}</p> */}
+                        <p className="card-text">작성자 : {item.userId}</p>
+
+                        <p className="card-text">{item.postComment}</p>
+                        <p className="card-text">{item.date}</p>
+
+
+                        {loggedInUserId === item.userId && (
+                          <button
+                            className="btn btn-danger"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              this.handleDeleteItem(item.userId, item.date);
+                            }}
+                          >
+                            삭제
+                          </button>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+                ))}
+            </div>
+            )}
+
+            {/* 댓글 작성란 */}
+            {this.state.selectedItem && (
+              <div className="form-container mt-4">
+                <Form
+                  onSubmit={this.sendCommentData}
+                  className="form-item board-form"
+                >
+                  {/* 화면에 안보이게 */}
+                  <Form.Group style={{ display: "none" }}>
+                    <Form.Label>댓글 Id</Form.Label>
+                    <p>{(this.state.commentId = shortId.generate())}</p>
+                  </Form.Group>
+
+                  <Form.Group style={{ display: "none" }}>
+                    <Form.Label>작성자</Form.Label>
+                    <p>
+                      {(this.state.userId = localStorage.getItem("userId"))}
+                    </p>
+                  </Form.Group>
+
+                  <Form.Group style={{ display: "none" }}>
+                    <Form.Label>게시물 Id</Form.Label>
+                    <p>
+                      {(this.state.postId = this.state.selectedItem.postId)}
+                    </p>
+                  </Form.Group>
+
+                  <Form.Group>
+                    <Form.Label>댓글 작성</Form.Label>
+                    <Form.Control
+                      as="textarea"
+                      onChange={this.handleChange}
+                      value={this.state.postComment}
+                      name="postComment"
+                      placeholder="댓글 내용"
+                    />
+                  </Form.Group>
+
+                  <Button type="submit" variant="primary">
+                    댓글 업로드
+                  </Button>
+                </Form>
+              </div>
+            )}
           </div>
 
+          <br />
+          <br />
 
+          {/* 게시물 리스트 */}
           <div className="row">
             {Array.isArray(this.state.items) &&
               this.state.items.map((item, index) => (
