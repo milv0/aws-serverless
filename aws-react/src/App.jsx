@@ -1,13 +1,13 @@
 import React from "react";
 import { BrowserRouter as Router, Route, Routes, Link } from "react-router-dom";
-import Form from "./Form";
+// import Form from "./Form";
 import Login from "./login";
 import SignUp from "./signup";
 import Post from "./post";
+import PostDetail from "./PostDetail";
 import BoardList from "./boardList"; // Import the BoardList component
 import MyPage from "./myPage";
-// import "./css/App.css";
-// import "./css/Form.css";
+
 function App() {
   return (
     <Router>
@@ -35,16 +35,24 @@ function App() {
               Post
             </Link>
           </li>
+          <li className="nav-item">
+            <Link to="/postDetail" className="nav-link text-white">
+              PostDetail
+            </Link>
+          </li>
         </ul>
       </div>
     </nav>
 
         <Routes>
+          
           <Route path="/login" element={<Login />} />
           <Route path="/signup" element={<SignUp />} />
           <Route path="/post" element={<Post />} />
           <Route path="/boardList" element={<BoardList />} />
           <Route path="/myPage" element={<MyPage />} />
+          <Route path="/boardList" element={<BoardList />} />
+          <Route path="/postDetail" element={<PostDetail />} />
         </Routes>
         
       </div>

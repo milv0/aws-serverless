@@ -4,6 +4,8 @@ import axios from "axios";
 import "./css/boardList.css";
 import { BrowserRouter as Router, Route, Routes, Link } from "react-router-dom";
 import "bootstrap/dist/css/bootstrap.min.css";
+import PostDetail from "./PostDetail";
+// import { Route } from "react-router-dom";
 
 export class BoardList extends Component {
   constructor(props) {
@@ -86,6 +88,7 @@ export class BoardList extends Component {
     } else {
       this.setState({ systemMessage: "해당 게시물을 찾을 수 없습니다." });
     }
+    // this.props.history.push(`/postDetail/${postId}`);
   };
 
   // 게시물 삭제
@@ -209,34 +212,31 @@ export class BoardList extends Component {
             )}
           </div>
 
+          {/* 게시물 가져오기 */}
           <div className="selected-item">
             {this.state.selectedItem && (
               <div className="selected-content p-4 border">
                 <h2 className="mb-4">선택한 게시물</h2>
                 <p>날짜: {this.state.selectedItem.date}</p>
                 <p>PostID: {this.state.selectedItem.postId}</p>
-                <p>제목: {this.state.selectedItem.boardTitle}</p>
                 <p>작성자: {this.state.selectedItem.userId}</p>
+                <p>제목: {this.state.selectedItem.boardTitle}</p>
                 <p>내용: {this.state.selectedItem.boardContent}</p>
-
                 {this.showStars(this.state.selectedItem.rate)}
               </div>
             )}
           </div>
+
 
           <div className="row">
             {Array.isArray(this.state.items) &&
               this.state.items.map((item, index) => (
                 <div key={index} className="col-md-4 mb-4">
                   <div className="card">
-                    {/* <img
-                      src={item.image}
-                      className="card-img-top"
-                      alt="게시물"
-                    /> */}
                     <div className="card-body">
-                      <h5 className="card-title">{item.boardTitle}</h5>
+                      <h3 className="card-title">{item.boardTitle}</h3>
                       <p className="card-text">{item.boardCategory}</p>
+                      <p className="card-text">{item.postId}</p>
                       <p className="card-text">{item.date}</p>
                       {this.showStars(item.rate)}
                       <button
@@ -248,6 +248,7 @@ export class BoardList extends Component {
                       >
                         게시물 가져오기
                       </button>
+
                       {loggedInUserId === item.userId && (
                         <button
                           className="btn btn-danger"
