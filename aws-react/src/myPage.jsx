@@ -159,7 +159,7 @@ export class MyPage extends Component {
     const isLoggedIn = !!userInfo; // Check if user is logged in
 
     return (
-      <div className="container mt-4">
+      <div className="container mt-4 d-flex flex-column align-items-center">
         <header className="app-header">
           <h1>MyPage</h1>
         </header>
@@ -179,7 +179,7 @@ export class MyPage extends Component {
           ) : (
             <p>Loading user information...</p>
           )}
-
+<br/>
           {!isLoggedIn ? (
             <Link to="/login" className="btn btn-primary mt-3">
               Login
@@ -197,9 +197,8 @@ export class MyPage extends Component {
           Get All Users
         </button>
 
-        {/* 여기에 Get All Boards 버튼 추가 */}
 
-        <form onSubmit={this.handleGetItem} className="form-item mt-4">
+        {/* <form onSubmit={this.handleGetItem} className="form-item mt-4">
           <h2>Get ID</h2>
           <input
             type="text"
@@ -227,7 +226,7 @@ export class MyPage extends Component {
           <button type="submit" className="btn btn-danger">
             Delete ID
           </button>
-        </form>
+        </form> */}
 
         {Array.isArray(this.state.items) &&
           this.state.items.map(

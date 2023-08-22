@@ -30,7 +30,7 @@ export class Post extends Component {
       image: "", //sendImgS3()를 통해 받아온 이미지 데이터
       boardTitle: "",
       boardContent: "",
-      boardCategory: "basic Catg",
+      boardCategory: "category1",
       rate: 0,
       selectedFile: null,
       uploadedImageUrl: null,
@@ -319,6 +319,7 @@ export class Post extends Component {
         </Button>
 
         {/* List output */}
+
         {Array.isArray(this.state.items) &&
           this.state.items.map(
             (item, index) =>
@@ -342,4 +343,5 @@ export class Post extends Component {
     );
   }
 }
+
 export default Post;

@@ -4,7 +4,6 @@ import { BrowserRouter as Router, Route, Routes, Link } from "react-router-dom";
 import Login from "./login";
 import SignUp from "./signup";
 import Post from "./post";
-import PostDetail from "./PostDetail";
 import BoardList from "./boardList"; // Import the BoardList component
 import MyPage from "./myPage";
 
@@ -35,11 +34,6 @@ function App() {
               Post
             </Link>
           </li>
-          <li className="nav-item">
-            <Link to="/postDetail" className="nav-link text-white">
-              PostDetail
-            </Link>
-          </li>
         </ul>
       </div>
     </nav>
@@ -52,7 +46,6 @@ function App() {
           <Route path="/boardList" element={<BoardList />} />
           <Route path="/myPage" element={<MyPage />} />
           <Route path="/boardList" element={<BoardList />} />
-          <Route path="/postDetail" element={<PostDetail />} />
         </Routes>
         
       </div>

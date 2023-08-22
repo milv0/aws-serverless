@@ -4,7 +4,6 @@ import axios from "axios";
 import "./css/boardList.css";
 import { BrowserRouter as Router, Route, Routes, Link } from "react-router-dom";
 import "bootstrap/dist/css/bootstrap.min.css";
-import PostDetail from "./PostDetail";
 import Form from "react-bootstrap/Form";
 import Button from "react-bootstrap/Button";
 import shortId from "shortid";
@@ -42,6 +41,7 @@ export class BoardList extends Component {
       expandedItemId: null, // 확장된 항목의 ID를 추적하는 상태 속성
       commentId: "",
       postComment: "",
+      selectedCategory: "", // 선택된 카테고리
     };
     this.handleChange = this.handleChange.bind(this);
     this.handleFileChange = this.handleFileChange.bind(this);
@@ -125,6 +125,11 @@ export class BoardList extends Component {
     }
   };
 
+  // 게시물 카테고리 선택
+  handleCategorySelect = (category) => {
+    this.setState({ selectedCategory: category });
+  };
+
   // 댓글 전체 조회
   async getCommentList() {
     try {
@@ -156,16 +161,21 @@ export class BoardList extends Component {
         userId: `${userId}`,
         postComment: `${postComment}`,
       });
-      this.setState({ systemMessage: `댓글 업로드 성공!!!` });
+      this.setState({
+        systemMessage: `댓글 업로드 성공!!!`,
+        commentId: shortId.generate(),
+        postComment: "", // 댓글 내용 초기화
+      });
+      await this.getCommentList();
     } catch (error) {
       console.error("Error get item:", error);
       this.setState({ systemMessage: `댓글 업로드 실패...` });
     }
   }
-  // 댓글 삭제
-  handleDeleteComment = async (commentId, postId) => {
 
-  };
+  // 댓글 삭제
+  handleDeleteComment = async (commentId, postId) => {};
+
   // 게시물 별점 저장하기
   async handleRateClick(rate) {
     this.setState({ rate });
@@ -241,6 +251,51 @@ export class BoardList extends Component {
             <button className="btn btn-primary" onClick={this.getBoardList}>
               Get All Boards List
             </button>
+
+            {/* 카테고리 선택 버튼 */}
+            <div>
+              <button
+                className={`btn btn-outline-secondary ${
+                  this.state.selectedCategory === "" ? "active" : ""
+                }`}
+                onClick={() => this.handleCategorySelect("")}
+              >
+                전체
+              </button>
+              <button
+                className={`btn btn-outline-secondary ${
+                  this.state.selectedCategory === "category1" ? "active" : ""
+                }`}
+                onClick={() => this.handleCategorySelect("category1")}
+              >
+                카테고리1
+              </button>
+              <button
+                className={`btn btn-outline-secondary ${
+                  this.state.selectedCategory === "category2" ? "active" : ""
+                }`}
+                onClick={() => this.handleCategorySelect("category2")}
+              >
+                카테고리2
+              </button>
+              <button
+                className={`btn btn-outline-secondary ${
+                  this.state.selectedCategory === "category3" ? "active" : ""
+                }`}
+                onClick={() => this.handleCategorySelect("category3")}
+              >
+                카테고리3
+              </button>
+              <button
+                className={`btn btn-outline-secondary ${
+                  this.state.selectedCategory === "category4" ? "active" : ""
+                }`}
+                onClick={() => this.handleCategorySelect("category4")}
+              >
+                카테고리4
+              </button>
+            </div>
+
             {isLoggedIn && (
               <Link to="/post" className="btn btn-success">
                 게시물 작성
@@ -268,45 +323,81 @@ export class BoardList extends Component {
               <div className="selected-content p-4 border">
                 <h2 className="mb-4">선택한 게시물</h2>
                 <p>날짜: {this.state.selectedItem.date}</p>
-                <p>PostID: {this.state.selectedItem.postId}</p>
+                {/* <p>PostID: {this.state.selectedItem.postId}</p> */}
                 <p>작성자: {this.state.selectedItem.userId}</p>
                 <p>제목: {this.state.selectedItem.boardTitle}</p>
                 <p>내용: {this.state.selectedItem.boardContent}</p>
                 {this.showStars(this.state.selectedItem.rate)}
+
+                {/* 로그인 된 사용자와 게시물 작성자가 같을 때만 삭제 버튼 표시 */}
+                {this.state.selectedItem.userId === loggedInUserId && (
+                  <div className="mt-4">
+                    <button
+                      className="btn btn-danger"
+                      onClick={() =>
+                        this.handleDeleteItem(
+                          this.state.selectedItem.userId,
+                          this.state.selectedItem.date
+                        )
+                      }
+                    >
+                      삭제
+                    </button>
+                  </div>
+                )}
+                {isLoggedIn && (
+                  <Link
+                    to={{
+                      pathname: "/post",
+                      state: { editItem: this.state.selectedItem }, // 현재 게시물 정보를 state로 전달
+                    }}
+                    className="btn btn-success mt-4 mr-2"
+                  >
+                    수정
+                  </Link>
+                )}
               </div>
             )}
+
+            <br />
+            <br />
             {/* 댓글 리스트 */}
+
             {this.state.selectedItem && (
-            <div className="row">
-              {Array.isArray(this.state.comments) &&
-                this.state.comments.map((item, index) => (
-                  <div key={index} className="col-md-4 mb-4">
-                    <div className="card">
-                      <div className="card-body">
-                        {/* <h5 className="card-title">{item.commentId}</h5> */}
-                        {/* <p className="card-text">{item.postId}</p> */}
-                        <p className="card-text">작성자 : {item.userId}</p>
-
-                        <p className="card-text">{item.postComment}</p>
-                        <p className="card-text">{item.date}</p>
-
-
-                        {loggedInUserId === item.userId && (
-                          <button
-                            className="btn btn-danger"
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              this.handleDeleteItem(item.userId, item.date);
-                            }}
-                          >
-                            삭제
-                          </button>
-                        )}
-                      </div>
-                    </div>
-                  </div>
-                ))}
-            </div>
+              <div className="row">
+                {Array.isArray(this.state.comments) &&
+                  this.state.comments.map(
+                    (item, index) =>
+                      // selectedItem.postId와 item.postId가 동일한 경우에만 렌더링
+                      item.postId === this.state.selectedItem.postId && (
+                        <div key={index} className="col-md-4 mb-4">
+                          <div className="card">
+                            <div className="card-body">
+                              <p className="card-text">{item.postComment}</p>
+                              <p className="card-text">
+                                작성자 : {item.userId}
+                              </p>
+                              <p className="card-text">{item.date}</p>
+                              {loggedInUserId === item.userId && (
+                                <button
+                                  className="btn btn-danger"
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    this.handleDeleteItem(
+                                      item.userId,
+                                      item.date
+                                    );
+                                  }}
+                                >
+                                  삭제
+                                </button>
+                              )}
+                            </div>
+                          </div>
+                        </div>
+                      )
+                  )}
+              </div>
             )}
 
             {/* 댓글 작성란 */}
@@ -361,40 +452,49 @@ export class BoardList extends Component {
           {/* 게시물 리스트 */}
           <div className="row">
             {Array.isArray(this.state.items) &&
-              this.state.items.map((item, index) => (
-                <div key={index} className="col-md-4 mb-4">
-                  <div className="card">
-                    <div className="card-body">
-                      <h3 className="card-title">{item.boardTitle}</h3>
-                      <p className="card-text">{item.boardCategory}</p>
-                      <p className="card-text">{item.postId}</p>
-                      <p className="card-text">{item.date}</p>
-                      {this.showStars(item.rate)}
-                      <button
-                        className="btn btn-primary get-post-button"
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          this.handleGetPostItem(item.postId);
-                        }}
-                      >
-                        게시물 가져오기
-                      </button>
+              this.state.items.map((item, index) => {
+                if (
+                  // 선택된 카테고리가 없거나, 선택된 카테고리와 게시물 카테고리가 일치할 경우에만 렌더링
+                  !this.state.selectedCategory ||
+                  this.state.selectedCategory === item.boardCategory
+                ) {
+                  return (
+                    <div key={index} className="col-md-4 mb-4">
+                      <div className="card">
+                        <div className="card-body">
+                          <h3 className="card-title">{item.boardTitle}</h3>
+                          <p className="card-text">{item.boardCategory}</p>
+                          <p className="card-text">작성자 : {item.userId}</p>
+                          <p className="card-text">{item.date}</p>
+                          {this.showStars(item.rate)}
+                          <button
+                            className="btn btn-primary get-post-button"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              this.handleGetPostItem(item.postId);
+                            }}
+                          >
+                            게시물 가져오기
+                          </button>
 
-                      {loggedInUserId === item.userId && (
-                        <button
-                          className="btn btn-danger"
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            this.handleDeleteItem(item.userId, item.date);
-                          }}
-                        >
-                          삭제
-                        </button>
-                      )}
+                          {loggedInUserId === item.userId && (
+                            <button
+                              className="btn btn-danger"
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                this.handleDeleteItem(item.userId, item.date);
+                              }}
+                            >
+                              삭제
+                            </button>
+                          )}
+                        </div>
+                      </div>
                     </div>
-                  </div>
-                </div>
-              ))}
+                  );
+                }
+                return null; // 선택된 카테고리와 일치하지 않을 경우 null 반환
+              })}
           </div>
         </main>
       </div>
